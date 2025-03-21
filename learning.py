@@ -1,7 +1,9 @@
 from transformers import pipeline, GPT2Tokenizer, GPT2LMHeadModel
 from googleapiclient.discovery import build
+import os
 
-YOUTUBE_API_KEY = 'your-youtube-api-key'  # 填入你的 YouTube API Key
+
+YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')  
 
 # 初始化 GPT-2 模型與 tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')

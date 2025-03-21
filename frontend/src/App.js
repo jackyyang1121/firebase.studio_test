@@ -13,7 +13,7 @@ function App() {
   const [answer, setAnswer] = useState('');
 
   // 用你的公開 URL 取代這行
-  const backendUrl = 'https://ai-learning-assistant-5000.app.github.dev'; // 換成你的實際 URL
+  const backendUrl = 'https://friendly-invention-4jvw9w69jg74cq69-5000.app.github.dev'; // 換成你的實際 URL
 
   const handleLogin = async () => {
     try {

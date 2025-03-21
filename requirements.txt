@@ -1,0 +1,8 @@
+flask==2.2.2
+transformers==4.25.1
+torch
+google-api-python-client==2.70.0
+flask-jwt-extended==4.4.4
+sqlalchemy==1.4.41
+# stripe==5.0.0  # 信用卡支付
+#pip install -r requirements.txt

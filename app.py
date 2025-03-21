@@ -6,7 +6,7 @@ from models import db, User
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # 換成你自己的密鑰
+app.config['JWT_SECRET_KEY'] = 'AIzaSyAi0_z2uwjFWhRBIVdsGA9fo_6PlV3nb9I'  # 我的密鑰
 db.init_app(app)
 jwt = JWTManager(app)
 

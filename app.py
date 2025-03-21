@@ -6,7 +6,7 @@ from models import db, User
 # import stripe  # 之後啟用
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['JWT_SECRET_KEY'] = 'AIzaSyAi0_z2uwjFWhRBIVdsGA9fo_6PlV3nb9I'  # 我的密鑰
 db.init_app(app)

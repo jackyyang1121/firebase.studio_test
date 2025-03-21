@@ -1,14 +1,17 @@
-from flask_cors import CORS
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from flask_cors import CORS
 from learning import generate_complex_plan, answer_question, search_youtube
 from models import db, User
-# import stripe  # 之後啟用
+import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['JWT_SECRET_KEY'] = 'AIzaSyAi0_z2uwjFWhRBIVdsGA9fo_6PlV3nb9I'  # 我的密鑰
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 db.init_app(app)
 jwt = JWTManager(app)
 
@@ -16,19 +19,20 @@ jwt = JWTManager(app)
 with app.app_context():
     db.create_all()
 
-# 註冊
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    user = User(email=data['email'], password=data['password'])  # 應加密
+    print(f"收到註冊資料: {data}")  # 確認收到請求
+    user = User(email=data['email'], password=data['password'])
     db.session.add(user)
     db.session.commit()
     return jsonify({'message': '註冊成功'})
 
-# 登入
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
+    print(f"收到登入資料: {data}")  # 加這行
     user = User.query.filter_by(email=data['email']).first()
     if user and user.password == data['password']:
         token = create_access_token(identity=user.id)

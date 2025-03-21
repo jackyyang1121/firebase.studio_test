@@ -11,9 +11,20 @@ function App() {
   const [plan, setPlan] = useState([]);
   const [videos, setVideos] = useState([]);
   const [answer, setAnswer] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false); // 新增狀態切換註冊/登入
 
-  
-  const backendUrl = 'https://friendly-invention-4jvw9w69jg74cq69-5000.app.github.dev'; 
+  const backendUrl = 'https://friendly-invention-4jvw9w69jg74cq69-5000.app.github.dev'; // 你的公開 URL
+
+  const handleRegister = async () => {
+    try {
+      const res = await axios.post(`${backendUrl}/register`, { email, password });
+      alert(res.data.message); // 顯示「註冊成功」
+      setIsRegistering(false); // 註冊完切回登入
+    } catch (error) {
+      console.error('Register failed:', error);
+      alert(`註冊失敗: ${error.message}`);
+    }
+  };
 
   const handleLogin = async () => {
     try {
@@ -22,7 +33,7 @@ function App() {
       localStorage.setItem('token', res.data.token);
     } catch (error) {
       console.error('Login failed:', error);
-      alert('登入失敗，請檢查後端是否運行');
+      alert('登入失敗，請檢查帳號密碼');
     }
   };
 
@@ -55,9 +66,34 @@ function App() {
 
       {!token && (
         <div>
-          <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <TextField label="密碼" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button onClick={handleLogin}>登入</Button>
+          <TextField
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ marginBottom: 10 }}
+          />
+          <TextField
+            label="密碼"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ marginBottom: 10 }}
+          />
+          {isRegistering ? (
+            <>
+              <Button variant="contained" onClick={handleRegister} style={{ marginRight: 10 }}>
+                註冊
+              </Button>
+              <Button onClick={() => setIsRegistering(false)}>已有帳號？登入</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="contained" onClick={handleLogin} style={{ marginRight: 10 }}>
+                登入
+              </Button>
+              <Button onClick={() => setIsRegistering(true)}>還沒帳號？註冊</Button>
+            </>
+          )}
         </div>
       )}
 

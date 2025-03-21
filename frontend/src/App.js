@@ -12,32 +12,47 @@ function App() {
   const [videos, setVideos] = useState([]);
   const [answer, setAnswer] = useState('');
 
+  // 用你的公開 URL 取代這行
+  const backendUrl = 'https://ai-learning-assistant-5000.app.github.dev'; // 換成你的實際 URL
+
   const handleLogin = async () => {
-    const res = await axios.post('http://localhost:5000/login', { email, password });
-    setToken(res.data.token);
-    localStorage.setItem('token', res.data.token);
+    try {
+      const res = await axios.post(`${backendUrl}/login`, { email, password });
+      setToken(res.data.token);
+      localStorage.setItem('token', res.data.token);
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('登入失敗，請檢查後端是否運行');
+    }
   };
 
   const getPlan = async () => {
-    const res = await axios.post('http://localhost:5000/api/plan', { goal }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setPlan(res.data.plan);
-    setVideos(res.data.videos);
+    try {
+      const res = await axios.post(`${backendUrl}/api/plan`, { goal }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPlan(res.data.plan);
+      setVideos(res.data.videos);
+    } catch (error) {
+      console.error('Get plan failed:', error);
+    }
   };
 
   const askQuestion = async () => {
-    const res = await axios.post('http://localhost:5000/api/ask', { question }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setAnswer(res.data.answer);
+    try {
+      const res = await axios.post(`${backendUrl}/api/ask`, { question }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAnswer(res.data.answer);
+    } catch (error) {
+      console.error('Ask question failed:', error);
+    }
   };
 
   return (
     <div style={{ padding: 20 }}>
       <Typography variant="h4">AI 學習計畫生成器</Typography>
 
-      {/* 登入 */}
       {!token && (
         <div>
           <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -46,7 +61,6 @@ function App() {
         </div>
       )}
 
-      {/* 主功能 */}
       {token && (
         <>
           <TextField label="學習目標" value={goal} onChange={(e) => setGoal(e.target.value)} fullWidth />

@@ -1,3 +1,4 @@
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from learning import generate_complex_plan, answer_question, search_youtube
@@ -5,6 +6,7 @@ from models import db, User
 # import stripe  # 之後啟用
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['JWT_SECRET_KEY'] = 'AIzaSyAi0_z2uwjFWhRBIVdsGA9fo_6PlV3nb9I'  # 我的密鑰
 db.init_app(app)
@@ -76,3 +78,5 @@ def subscribe():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+#python app.py

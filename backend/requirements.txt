@@ -7,6 +7,6 @@ flask-jwt-extended
 sqlalchemy
 flask-cors
 gunicorn
-# stripe==5.0.0  # 信用卡支付，之後啟用
-# stripe==5.0.0  # 信用卡支付
+flask-login
+werkzeug
 #pip install -r requirements.txt

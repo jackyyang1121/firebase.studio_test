@@ -1,124 +1,106 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, TextField, Typography, Card } from '@mui/material';
 
-function App() {
-  const [email, setEmail] = useState('');
+const App = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [goal, setGoal] = useState('');
-  const [question, setQuestion] = useState('');
-  const [plan, setPlan] = useState([]);
-  const [videos, setVideos] = useState([]);
-  const [answer, setAnswer] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false); // 新增狀態切換註冊/登入
+  const [plan, setPlan] = useState('');
+  const [progress, setProgress] = useState([]);
+  const backendUrl = 'https://friendly-invention-4jvw9w69jg74cq69-5000.app.github.dev/';
 
-  const backendUrl = 'https://friendly-invention-4jvw9w69jg74cq69-5000.app.github.dev'; // 你的公開 URL
-
-  const handleRegister = async () => {
+  const register = async () => {
+    console.log('Register data:', { username, password });
     try {
-      const res = await axios.post(`${backendUrl}/register`, { email, password });
-      alert(res.data.message); // 顯示「註冊成功」
-      setIsRegistering(false); // 註冊完切回登入
+      await axios.post(`${backendUrl}/register`, { username, password }, { withCredentials: true });
+      alert('註冊成功');
     } catch (error) {
-      console.error('Register failed:', error);
+      console.error('Register error:', error.message, error.response?.data);
       alert(`註冊失敗: ${error.message}`);
     }
   };
 
-  const handleLogin = async () => {
+  const login = async () => {
+    console.log('Login data:', { username, password });
     try {
-      const res = await axios.post(`${backendUrl}/login`, { email, password });
-      setToken(res.data.token);
-      localStorage.setItem('token', res.data.token);
+      await axios.post(`${backendUrl}/login`, { username, password }, { withCredentials: true });
+      alert('登入成功');
     } catch (error) {
-      console.error('Login failed:', error);
-      alert('登入失敗，請檢查帳號密碼');
+      console.error('Login error:', error.message, error.response?.data);
+      alert(`登入失敗: ${error.message}`);
     }
   };
 
-  const getPlan = async () => {
+  const logout = async () => {
     try {
-      const res = await axios.post(`${backendUrl}/api/plan`, { goal }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPlan(res.data.plan);
-      setVideos(res.data.videos);
+      await axios.post(`${backendUrl}/logout`, {}, { withCredentials: true });
+      alert('登出成功');
     } catch (error) {
-      console.error('Get plan failed:', error);
+      console.error('Logout error:', error.message, error.response?.data);
+      alert(`登出失敗: ${error.message}`);
     }
   };
 
-  const askQuestion = async () => {
+  const generatePlan = async () => {
+    console.log('Generate plan data:', { goal }); // 新增日誌
     try {
-      const res = await axios.post(`${backendUrl}/api/ask`, { question }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAnswer(res.data.answer);
+      const response = await axios.post(`${backendUrl}/generate_plan`, { goal }, { withCredentials: true });
+      setPlan(response.data.plan);
+      alert('生成計畫成功');
     } catch (error) {
-      console.error('Ask question failed:', error);
+      console.error('Generate plan error:', error.message, error.response?.data);
+      alert(`生成計畫失敗: ${error.message}`);
+    }
+  };
+
+  const getProgress = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/learning_progress`, { withCredentials: true });
+      setProgress(response.data);
+    } catch (error) {
+      console.error('Get progress error:', error.message, error.response?.data);
+      alert(`獲取進度失敗: ${error.message}`);
+    }
+  };
+
+  const checkLogin = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/check_login`, { withCredentials: true });
+      alert(response.data.message);
+    } catch (error) {
+      console.error('Check login error:', error.message, error.response?.data);
+      alert(`未登入: ${error.message}`);
     }
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <Typography variant="h4">AI 學習計畫生成器</Typography>
-
-      {!token && (
-        <div>
-          <TextField
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ marginBottom: 10 }}
-          />
-          <TextField
-            label="密碼"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ marginBottom: 10 }}
-          />
-          {isRegistering ? (
-            <>
-              <Button variant="contained" onClick={handleRegister} style={{ marginRight: 10 }}>
-                註冊
-              </Button>
-              <Button onClick={() => setIsRegistering(false)}>已有帳號？登入</Button>
-            </>
-          ) : (
-            <>
-              <Button variant="contained" onClick={handleLogin} style={{ marginRight: 10 }}>
-                登入
-              </Button>
-              <Button onClick={() => setIsRegistering(true)}>還沒帳號？註冊</Button>
-            </>
-          )}
-        </div>
-      )}
-
-      {token && (
-        <>
-          <TextField label="學習目標" value={goal} onChange={(e) => setGoal(e.target.value)} fullWidth />
-          <Button variant="contained" onClick={getPlan} style={{ marginTop: 10 }}>生成計畫</Button>
-
-          {plan.map((step, idx) => (
-            <Typography key={idx}>{step}</Typography>
-          ))}
-          {videos.map(video => (
-            <Card key={video.videoId} style={{ margin: '10px 0', padding: 10 }}>
-              <Typography>{video.title}</Typography>
-              <a href={`https://www.youtube.com/watch?v=${video.videoId}`} target="_blank" rel="noopener noreferrer">觀看</a>
-            </Card>
-          ))}
-
-          <TextField label="問問題" value={question} onChange={(e) => setQuestion(e.target.value)} fullWidth style={{ marginTop: 20 }} />
-          <Button variant="contained" onClick={askQuestion} style={{ marginTop: 10 }}>問 AI</Button>
-          <Typography>{answer}</Typography>
-        </>
-      )}
+    <div>
+      <h1>AI 學習助手</h1>
+      <input type="text" placeholder="用戶名" onChange={(e) => setUsername(e.target.value)} />
+      <input type="password" placeholder="密碼" onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={register}>註冊</button>
+      <button onClick={login}>登入</button>
+      <button onClick={logout}>登出</button>
+      <button onClick={checkLogin}>檢查登入狀態</button>
+      <input type="text" placeholder="學習目標" onChange={(e) => setGoal(e.target.value)} />
+      <button onClick={generatePlan}>生成計畫</button>
+      <button onClick={getProgress}>查看進度</button>
+      <div>
+        <h2>學習計畫</h2>
+        <p>{plan}</p>
+      </div>
+      <div>
+        <h2>學習進度</h2>
+        {progress.map((item, index) => (
+          <div key={index}>
+            <p>目標：{item.goal}</p>
+            <p>計畫：{item.plan}</p>
+            <p>創建時間：{item.created_at}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default App;

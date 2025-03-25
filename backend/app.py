@@ -6,11 +6,20 @@ from flask_cors import CORS
 from models import db, User, LearningPlan
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '0905671616'
+app.config['SECRET_KEY'] = "0905671616"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-app.config['SESSION_COOKIE_SECURE'] = True
-CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["*"], "supports_credentials": True}})
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # 保持跨站點登入
+app.config['SESSION_COOKIE_SECURE'] = True      # 只在 HTTPS 下傳送 Cookie
+
+# 限制 CORS 只允許你的前端
+CORS(app, resources={
+    r"/*": {
+        "origins": "https://ai-learning-assistant-454719.web.app",  # 只允許 Firebase 前端
+        "methods": ["GET", "POST", "OPTIONS"],                     # 明確指定方法
+        "allow_headers": ["Content-Type", "Authorization"],        # 限制必要標頭
+        "supports_credentials": True                               # 支援憑證
+    }
+})
 
 db.init_app(app)
 login_manager = LoginManager()

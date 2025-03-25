@@ -9,4 +9,5 @@ flask-cors
 gunicorn
 flask-login
 werkzeug
+SQLAlchemy
 #pip install -r requirements.txt

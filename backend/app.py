@@ -9,7 +9,7 @@ app.config['SECRET_KEY'] = '0905671616'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = False
-CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:3000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "https://flask-learning-app-xxx.web.app"}}, supports_credentials=True)
 
 from models import db, User, LearningPlan
 db.init_app(app)

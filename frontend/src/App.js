@@ -7,7 +7,7 @@ const App = () => {
   const [goal, setGoal] = useState('');
   const [plan, setPlan] = useState('');
   const [progress, setProgress] = useState([]);
-  const backendUrl = 'https://friendly-invention-4jvw9w69jg74cq69-5000.app.github.dev/';
+  const backendUrl = 'https://ai-learning-assistant-30563387234.us-central1.run.app';
 
   const register = async () => {
     console.log('Register data:', { username, password });

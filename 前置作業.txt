@@ -1,9 +1,0 @@
-因為單個檔案太大推不上去，所以每次打開codepace要先重新下載
-curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-423.0.0-linux-x86_64.tar.gz
-tar -xf google-cloud-sdk-423.0.0-linux-x86_64.tar.gz
-./google-cloud-sdk/install.sh --quiet
-安裝好後跑
-./google-cloud-sdk/bin/gcloud init
-
-
-結束後要刪掉google-cloud-sdk-423.0.0-linux-x86_64.tar.gz

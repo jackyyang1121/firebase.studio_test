@@ -10,7 +10,12 @@ app.config['SECRET_KEY'] = '0905671616'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = True
-CORS(app, resources={r"/*": {"origins": "https://ai-learning-assistant-454719.web.app"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {
+    "origins": "https://ai-learning-assistant-454719.web.app",
+    "methods": ["GET", "POST", "OPTIONS"],  # 明確允許方法
+    "allow_headers": ["Content-Type", "Authorization"],  # 允許的標頭
+    "supports_credentials": True
+}})
 
 db.init_app(app)
 login_manager = LoginManager()

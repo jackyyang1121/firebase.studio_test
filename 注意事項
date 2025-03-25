@@ -1,0 +1,2 @@
+前端部署在firebase
+後端部署在cloud Run //因為App Engine需下載Google SDK，檔案超過500MB推不上去github需要每次開起都要重新下載

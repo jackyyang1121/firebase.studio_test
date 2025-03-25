@@ -1,7 +1,0 @@
-npx create-react-app frontend //生成react專案
-
-
-cd frontend
-npm install axios @mui/material @emotion/react @emotion/styled
-
-npm start

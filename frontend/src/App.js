@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Form, Button, Card, ListGroup, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Card, ListGroup, Spinner, Alert } from 'react-bootstrap';
 import { motion } from 'framer-motion'; // 引入動畫庫
 import './App.css';
 

@@ -14,7 +14,10 @@ app.config['SESSION_COOKIE_SECURE'] = True      # 只在 HTTPS 下傳送 Cookie
 # 限制 CORS 只允許你的前端
 CORS(app, resources={
     r"/*": {
-        "origins": "https://ai-learning-assistant-454719.web.app",  # 只允許 Firebase 前端
+        "origins": [
+            "https://ai-learning-assistant-454719.web.app",
+            "https://ai-learning-assistant-454719.firebaseapp.com"
+        ], # 只允許 Firebase 前端
         "methods": ["GET", "POST", "OPTIONS"],                     # 明確指定方法
         "allow_headers": ["Content-Type", "Authorization"],        # 限制必要標頭
         "supports_credentials": True                               # 支援憑證

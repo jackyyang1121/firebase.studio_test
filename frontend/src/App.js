@@ -1,132 +1,177 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Card, ListGroup, Spinner, Alert } from 'react-bootstrap';
-import './App.css'; // 稍後會提供樣式文件
+import { motion } from 'framer-motion'; // 引入動畫庫
+import './App.css';
 
-// 註冊表單組件
 const RegisterForm = ({ username, setUsername, password, setPassword, register, loading, error }) => (
-  <Card className="mb-4 shadow-sm">
-    <Card.Header>註冊</Card.Header>
-    <Card.Body>
-      <Form>
-        <Form.Group controlId="registerUsername" className="mb-3">
-          <Form.Label>用戶名</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="輸入用戶名"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group controlId="registerPassword" className="mb-3">
-          <Form.Label>密碼</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="輸入密碼"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
-        <Button variant="primary" onClick={register} disabled={loading}>
-          {loading ? <Spinner as="span" animation="border" size="sm" /> : '註冊'}
-        </Button>
-        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-      </Form>
-    </Card.Body>
-  </Card>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+    <Card className="mb-4 tech-card">
+      <Card.Header className="tech-header">註冊</Card.Header>
+      <Card.Body>
+        <Form>
+          <Form.Group controlId="registerUsername" className="mb-3">
+            <Form.Label>用戶名</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="輸入用戶名"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="tech-input"
+            />
+          </Form.Group>
+          <Form.Group controlId="registerPassword" className="mb-3">
+            <Form.Label>密碼</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="輸入密碼"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="tech-input"
+            />
+          </Form.Group>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="btn tech-btn"
+            onClick={register}
+            disabled={loading}
+          >
+            {loading ? <Spinner as="span" animation="border" size="sm" /> : '註冊'}
+          </motion.button>
+          {error && <Alert variant="danger" className="mt-3 tech-alert">{error}</Alert>}
+        </Form>
+      </Card.Body>
+    </Card>
+  </motion.div>
 );
 
-// 登入表單組件
 const LoginForm = ({ username, setUsername, password, setPassword, login, logout, checkLogin, loading, error }) => (
-  <Card className="mb-4 shadow-sm">
-    <Card.Header>登入</Card.Header>
-    <Card.Body>
-      <Form>
-        <Form.Group controlId="loginUsername" className="mb-3">
-          <Form.Label>用戶名</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="輸入用戶名"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group controlId="loginPassword" className="mb-3">
-          <Form.Label>密碼</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="輸入密碼"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
-        <Button variant="success" onClick={login} disabled={loading} className="me-2">
-          {loading ? <Spinner as="span" animation="border" size="sm" /> : '登入'}
-        </Button>
-        <Button variant="secondary" onClick={logout} disabled={loading} className="me-2">
-          登出
-        </Button>
-        <Button variant="info" onClick={checkLogin} disabled={loading}>
-          檢查登入狀態
-        </Button>
-        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-      </Form>
-    </Card.Body>
-  </Card>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+    <Card className="mb-4 tech-card">
+      <Card.Header className="tech-header">登入</Card.Header>
+      <Card.Body>
+        <Form>
+          <Form.Group controlId="loginUsername" className="mb-3">
+            <Form.Label>用戶名</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="輸入用戶名"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="tech-input"
+            />
+          </Form.Group>
+          <Form.Group controlId="loginPassword" className="mb-3">
+            <Form.Label>密碼</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="輸入密碼"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="tech-input"
+            />
+          </Form.Group>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="btn tech-btn me-2"
+            onClick={login}
+            disabled={loading}
+          >
+            {loading ? <Spinner as="span" animation="border" size="sm" /> : '登入'}
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="btn tech-btn-secondary me-2"
+            onClick={logout}
+            disabled={loading}
+          >
+            登出
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="btn tech-btn-info"
+            onClick={checkLogin}
+            disabled={loading}
+          >
+            檢查登入狀態
+          </motion.button>
+          {error && <Alert variant="danger" className="mt-3 tech-alert">{error}</Alert>}
+        </Form>
+      </Card.Body>
+    </Card>
+  </motion.div>
 );
 
-// 學習計畫生成組件
 const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) => (
-  <Card className="mb-4 shadow-sm">
-    <Card.Header>生成學習計畫</Card.Header>
-    <Card.Body>
-      <Form>
-        <Form.Group controlId="goal" className="mb-3">
-          <Form.Label>學習目標</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="輸入學習目標"
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-          />
-        </Form.Group>
-        <Button variant="primary" onClick={generatePlan} disabled={loading}>
-          {loading ? <Spinner as="span" animation="border" size="sm" /> : '生成計畫'}
-        </Button>
-        {plan && <Card.Text className="mt-3">{plan}</Card.Text>}
-        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-      </Form>
-    </Card.Body>
-  </Card>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+    <Card className="mb-4 tech-card">
+      <Card.Header className="tech-header">生成學習計畫</Card.Header>
+      <Card.Body>
+        <Form>
+          <Form.Group controlId="goal" className="mb-3">
+            <Form.Label>學習目標</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="輸入學習目標"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              className="tech-input"
+            />
+          </Form.Group>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="btn tech-btn"
+            onClick={generatePlan}
+            disabled={loading}
+          >
+            {loading ? <Spinner as="span" animation="border" size="sm" /> : '生成計畫'}
+          </motion.button>
+          {plan && <Card.Text className="mt-3 tech-text">{plan}</Card.Text>}
+          {error && <Alert variant="danger" className="mt-3 tech-alert">{error}</Alert>}
+        </Form>
+      </Card.Body>
+    </Card>
+  </motion.div>
 );
 
-// 學習進度展示組件
 const LearningProgress = ({ progress, getProgress, loading, error }) => (
-  <Card className="mb-4 shadow-sm">
-    <Card.Header>
-      學習進度
-      <Button variant="outline-primary" size="sm" onClick={getProgress} disabled={loading} className="float-end">
-        {loading ? <Spinner as="span" animation="border" size="sm" /> : '刷新'}
-      </Button>
-    </Card.Header>
-    <ListGroup variant="flush">
-      {progress.length > 0 ? (
-        progress.map((item, index) => (
-          <ListGroup.Item key={index}>
-            <h5>{item.goal}</h5>
-            <p>{item.plan}</p>
-            <small className="text-muted">創建時間: {item.created_at}</small>
-          </ListGroup.Item>
-        ))
-      ) : (
-        <ListGroup.Item>尚無進度記錄</ListGroup.Item>
-      )}
-    </ListGroup>
-    {error && <Alert variant="danger" className="m-3">{error}</Alert>}
-  </Card>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+    <Card className="mb-4 tech-card">
+      <Card.Header className="tech-header">
+        學習進度
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="btn tech-btn-outline float-end"
+          onClick={getProgress}
+          disabled={loading}
+        >
+          {loading ? <Spinner as="span" animation="border" size="sm" /> : '刷新'}
+        </motion.button>
+      </Card.Header>
+      <ListGroup variant="flush">
+        {progress.length > 0 ? (
+          progress.map((item, index) => (
+            <ListGroup.Item key={index} className="tech-list-item">
+              <h5>{item.goal}</h5>
+              <p>{item.plan}</p>
+              <small className="text-muted">創建時間: {item.created_at}</small>
+            </ListGroup.Item>
+          ))
+        ) : (
+          <ListGroup.Item className="tech-list-item">尚無進度記錄</ListGroup.Item>
+        )}
+      </ListGroup>
+      {error && <Alert variant="danger" className="m-3 tech-alert">{error}</Alert>}
+    </Card>
+  </motion.div>
 );
 
-// 主應用組件
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -217,55 +262,64 @@ const App = () => {
   };
 
   return (
-    <Container className="py-5">
-      <h1 className="text-center mb-4">AI 學習助手</h1>
-      <Row>
-        <Col md={6}>
-          <RegisterForm
-            username={username}
-            setUsername={setUsername}
-            password={password}
-            setPassword={setPassword}
-            register={register}
-            loading={loading}
-            error={error}
-          />
-        </Col>
-        <Col md={6}>
-          <LoginForm
-            username={username}
-            setUsername={setUsername}
-            password={password}
-            setPassword={setPassword}
-            login={login}
-            logout={logout}
-            checkLogin={checkLogin}
-            loading={loading}
-            error={error}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <PlanGenerator
-            goal={goal}
-            setGoal={setGoal}
-            generatePlan={generatePlan}
-            plan={plan}
-            loading={loading}
-            error={error}
-          />
-        </Col>
-        <Col md={6}>
-          <LearningProgress
-            progress={progress}
-            getProgress={getProgress}
-            loading={loading}
-            error={error}
-          />
-        </Col>
-      </Row>
-    </Container>
+    <div className="tech-background">
+      <Container className="py-5">
+        <motion.h1
+          className="text-center mb-5 tech-title"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          AI 學習助手
+        </motion.h1>
+        <Row>
+          <Col md={6}>
+            <RegisterForm
+              username={username}
+              setUsername={setUsername}
+              password={password}
+              setPassword={setPassword}
+              register={register}
+              loading={loading}
+              error={error}
+            />
+          </Col>
+          <Col md={6}>
+            <LoginForm
+              username={username}
+              setUsername={setUsername}
+              password={password}
+              setPassword={setPassword}
+              login={login}
+              logout={logout}
+              checkLogin={checkLogin}
+              loading={loading}
+              error={error}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <PlanGenerator
+              goal={goal}
+              setGoal={setGoal}
+              generatePlan={generatePlan}
+              plan={plan}
+              loading={loading}
+              error={error}
+            />
+          </Col>
+          <Col md={6}>
+            <LearningProgress
+              progress={progress}
+              getProgress={getProgress}
+              loading={loading}
+              error={error}
+            />
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

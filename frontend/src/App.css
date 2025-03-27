@@ -1,27 +1,111 @@
-body {
-  background-color: #f8f9fa;
+/* 整體背景 */
+.tech-background {
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh;
+  padding: 20px;
   font-family: 'Roboto', sans-serif;
 }
 
-h1 {
-  font-weight: 700;
-  color: #343a40;
+/* 標題 */
+.tech-title {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
 }
 
-.card {
+/* 卡片 */
+.tech-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tech-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0, 191, 255, 0.2);
+}
+
+.tech-header {
+  background: rgba(0, 191, 255, 0.1);
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+/* 輸入框 */
+.tech-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border-radius: 8px;
+}
+
+.tech-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 按鈕 */
+.tech-btn {
+  background: linear-gradient(45deg, #00b4db, #0083b0);
   border: none;
-  border-radius: 10px;
-  transition: transform 0.2s;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: background 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+.tech-btn:hover {
+  background: linear-gradient(45deg, #0083b0, #00b4db);
 }
 
-.btn {
-  border-radius: 5px;
+.tech-btn-secondary {
+  background: linear-gradient(45deg, #6b7280, #4b5563);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 20px;
 }
 
-.list-group-item {
-  border-left: 4px solid #007bff;
+.tech-btn-info {
+  background: linear-gradient(45deg, #0ea5e9, #0284c7);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 20px;
+}
+
+.tech-btn-outline {
+  background: transparent;
+  border: 1px solid #00b4db;
+  color: #00b4db;
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+/* 文字和列表 */
+.tech-text {
+  color: #e0e0e0;
+}
+
+.tech-list-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 5px solid #00b4db;
+  color: #e0e0e0;
+  transition: background 0.2s ease;
+}
+
+.tech-list-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* 警告 */
+.tech-alert {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #ffcccc;
 }

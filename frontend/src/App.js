@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Card, ListGroup, Spinner, Alert } from 'react-bootstrap';
-import { motion } from 'framer-motion'; // 引入動畫庫
+import { motion } from 'framer-motion';
 import './App.css';
+import backgroundImage from './assets/background.jpg'; // 引入背景圖片
 
+// 註冊表單組件
 const RegisterForm = ({ username, setUsername, password, setPassword, register, loading, error }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
     <Card className="mb-4 tech-card">
@@ -31,7 +33,7 @@ const RegisterForm = ({ username, setUsername, password, setPassword, register, 
             />
           </Form.Group>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(0, 180, 219, 0.5)' }}
             whileTap={{ scale: 0.95 }}
             className="btn tech-btn"
             onClick={register}
@@ -46,6 +48,7 @@ const RegisterForm = ({ username, setUsername, password, setPassword, register, 
   </motion.div>
 );
 
+// 登入表單組件
 const LoginForm = ({ username, setUsername, password, setPassword, login, logout, checkLogin, loading, error }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
     <Card className="mb-4 tech-card">
@@ -73,7 +76,7 @@ const LoginForm = ({ username, setUsername, password, setPassword, login, logout
             />
           </Form.Group>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(0, 180, 219, 0.5)' }}
             whileTap={{ scale: 0.95 }}
             className="btn tech-btn me-2"
             onClick={login}
@@ -82,7 +85,7 @@ const LoginForm = ({ username, setUsername, password, setPassword, login, logout
             {loading ? <Spinner as="span" animation="border" size="sm" /> : '登入'}
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(107, 114, 128, 0.5)' }}
             whileTap={{ scale: 0.95 }}
             className="btn tech-btn-secondary me-2"
             onClick={logout}
@@ -91,7 +94,7 @@ const LoginForm = ({ username, setUsername, password, setPassword, login, logout
             登出
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(14, 165, 233, 0.5)' }}
             whileTap={{ scale: 0.95 }}
             className="btn tech-btn-info"
             onClick={checkLogin}
@@ -106,6 +109,7 @@ const LoginForm = ({ username, setUsername, password, setPassword, login, logout
   </motion.div>
 );
 
+// 學習計畫生成組件
 const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
     <Card className="mb-4 tech-card">
@@ -123,7 +127,7 @@ const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) =>
             />
           </Form.Group>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(0, 180, 219, 0.5)' }}
             whileTap={{ scale: 0.95 }}
             className="btn tech-btn"
             onClick={generatePlan}
@@ -131,7 +135,16 @@ const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) =>
           >
             {loading ? <Spinner as="span" animation="border" size="sm" /> : '生成計畫'}
           </motion.button>
-          {plan && <Card.Text className="mt-3 tech-text">{plan}</Card.Text>}
+          {plan && (
+            <motion.div
+              className="mt-3 tech-plan"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {plan}
+            </motion.div>
+          )}
           {error && <Alert variant="danger" className="mt-3 tech-alert">{error}</Alert>}
         </Form>
       </Card.Body>
@@ -139,13 +152,14 @@ const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) =>
   </motion.div>
 );
 
+// 學習進度展示組件
 const LearningProgress = ({ progress, getProgress, loading, error }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
     <Card className="mb-4 tech-card">
       <Card.Header className="tech-header">
         學習進度
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(0, 180, 219, 0.5)' }}
           whileTap={{ scale: 0.95 }}
           className="btn tech-btn-outline float-end"
           onClick={getProgress}
@@ -157,11 +171,17 @@ const LearningProgress = ({ progress, getProgress, loading, error }) => (
       <ListGroup variant="flush">
         {progress.length > 0 ? (
           progress.map((item, index) => (
-            <ListGroup.Item key={index} className="tech-list-item">
+            <motion.div
+              key={index}
+              className="tech-list-item"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
               <h5>{item.goal}</h5>
               <p>{item.plan}</p>
               <small className="text-muted">創建時間: {item.created_at}</small>
-            </ListGroup.Item>
+            </motion.div>
           ))
         ) : (
           <ListGroup.Item className="tech-list-item">尚無進度記錄</ListGroup.Item>
@@ -262,8 +282,8 @@ const App = () => {
   };
 
   return (
-    <div className="tech-background">
-      <Container className="py-5">
+    <div className="tech-background" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <Container className="py-5 position-relative">
         <motion.h1
           className="text-center mb-5 tech-title"
           initial={{ opacity: 0 }}

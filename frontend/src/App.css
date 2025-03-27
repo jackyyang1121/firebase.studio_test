@@ -1,51 +1,77 @@
 /* 整體背景 */
 .tech-background {
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   min-height: 100vh;
   padding: 20px;
   font-family: 'Roboto', sans-serif;
+  position: relative;
+}
+
+/* 添加半透明覆蓋層，確保內容可讀 */
+.tech-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* 半透明黑色覆蓋 */
+  z-index: 0;
 }
 
 /* 標題 */
 .tech-title {
   color: #ffffff;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+  text-shadow: 0 0 15px rgba(0, 191, 255, 0.7);
+  z-index: 1;
+  position: relative;
 }
 
 /* 卡片 */
 .tech-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 191, 255, 0.3);
   border-radius: 15px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .tech-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 30px rgba(0, 191, 255, 0.2);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 191, 255, 0.4);
 }
 
 .tech-header {
-  background: rgba(0, 191, 255, 0.1);
+  background: rgba(0, 191, 255, 0.2);
   color: #ffffff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 191, 255, 0.4);
   font-weight: 600;
+  letter-spacing: 1px;
 }
 
 /* 輸入框 */
 .tech-input {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 191, 255, 0.4);
   color: #ffffff;
-  border-radius: 8px;
+  border-radius: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.tech-input:focus {
+  border-color: #00b4db;
+  box-shadow: 0 0 10px rgba(0, 191, 255, 0.6);
 }
 
 .tech-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* 按鈕 */
@@ -53,10 +79,10 @@
   background: linear-gradient(45deg, #00b4db, #0083b0);
   border: none;
   color: #ffffff;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 10px;
+  padding: 12px 25px;
   font-weight: 500;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .tech-btn:hover {
@@ -67,45 +93,67 @@
   background: linear-gradient(45deg, #6b7280, #4b5563);
   border: none;
   color: #ffffff;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 10px;
+  padding: 12px 25px;
 }
 
 .tech-btn-info {
   background: linear-gradient(45deg, #0ea5e9, #0284c7);
   border: none;
   color: #ffffff;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 10px;
+  padding: 12px 25px;
 }
 
 .tech-btn-outline {
   background: transparent;
   border: 1px solid #00b4db;
   color: #00b4db;
-  border-radius: 8px;
-  padding: 5px 15px;
+  border-radius: 10px;
+  padding: 8px 20px;
+  transition: border-color 0.3s ease, color 0.3s ease;
 }
 
-/* 文字和列表 */
-.tech-text {
+.tech-btn-outline:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+/* 計畫展示 */
+.tech-plan {
+  background: rgba(0, 191, 255, 0.15);
+  padding: 15px;
+  border-radius: 10px;
   color: #e0e0e0;
+  border: 1px dashed #00b4db;
 }
 
+/* 進度列表 */
 .tech-list-item {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.08);
   border-left: 5px solid #00b4db;
   color: #e0e0e0;
-  transition: background 0.2s ease;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .tech-list-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
 }
 
 /* 警告 */
 .tech-alert {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.6);
   color: #ffcccc;
+  border-radius: 10px;
+}
+
+/* 確保內容在覆蓋層之上 */
+.container {
+  position: relative;
+  z-index: 1;
 }

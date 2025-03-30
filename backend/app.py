@@ -80,6 +80,7 @@ def login():
     if user and check_password_hash(user.password, password):
         login_user(user)
         return jsonify({'message': '登入成功'}), 200
+    logger.warning(f"Login failed for username: {username}")
     return jsonify({'message': '登入失敗'}), 401
 
 @app.route('/logout', methods=['POST'])

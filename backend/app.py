@@ -19,17 +19,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = True
 logger.info(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "https://ai-learning-assistant-454719.web.app",
-            "https://ai-learning-assistant-454719.firebaseapp.com"
-        ],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
-    }
-})
+CORS(app, resources={r"/*": {"origins": ["https://ai-learning-assistant-454719.web.app", "https://ai-learning-assistant-454719.firebaseapp.com"], "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"], "supports_credentials": True}})
 
 db.init_app(app)
 login_manager = LoginManager()
@@ -44,12 +34,7 @@ HF_API_URL = "https://api-inference.huggingface.co/models/distilgpt2"
 
 def generate_learning_plan(goal):
     logger.info(f"Generating plan for goal: {goal}")
-    prompt = f"""
-    為目標 '{goal}' 生成一個學習課程，包含：
-    1. 簡短的概念講解（50字以內）
-    2. 一個程式碼範例
-    3. 一個簡單的練習題
-    """
+    prompt = f"為目標 '{goal}' 生成一個學習課程，包含：1. 簡短的概念講解（50字以內）2. 一個程式碼範例3. 一個簡單的練習題"
     headers = {"Authorization": f"Bearer {HF_API_KEY}"}
     payload = {"inputs": prompt, "parameters": {"max_length": 300, "temperature": 0.7}}
     response = requests.post(HF_API_URL, headers=headers, json=payload)
@@ -68,26 +53,23 @@ def register():
     data = request.get_json()
     logger.info(f"Register request data: {data}")
     if not data or 'username' not in data or 'password' not in data:
+        logger.warning("Missing username or password")
         return jsonify({'message': '缺少用戶名或密碼'}), 400
     username = data['username']
     password = data['password']
     if User.query.filter_by(username=username).first():
+        logger.info(f"User {username} already exists")
         return jsonify({'message': '用戶已存在'}), 400
-    hashed_password = generate_password_hash(password,method='sha256')
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')  # 修正這裡
     new_user = User(username=username, password=hashed_password)
     try:
         db.session.add(new_user)
         db.session.commit()
-        logger.info("User registered successfully")
+        logger.info(f"User {username} registered successfully")
         return jsonify({'message': '註冊成功'}), 201
     except Exception as e:
         logger.error(f"Register failed: {str(e)}")
         return jsonify({'message': '註冊失敗，資料庫錯誤'}), 500
-
-@app.route('/check_login', methods=['GET'])
-@login_required
-def check_login():
-    return jsonify({'message': f'已登入，用戶名：{current_user.username}'}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -131,7 +113,6 @@ with app.app_context():
         logger.info("Database tables created")
     except Exception as e:
         logger.error(f"Failed to create tables: {str(e)}")
-        raise  # 讓應用啟動失敗，方便看到錯誤
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8080)))

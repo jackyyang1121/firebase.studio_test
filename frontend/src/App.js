@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import './App.css';
 import backgroundImage from './assets/background.jpg'; // 引入背景圖片
 
+const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
+
 // 註冊表單組件
 const RegisterForm = ({ username, setUsername, password, setPassword, register, loading, error }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -20,6 +22,7 @@ const RegisterForm = ({ username, setUsername, password, setPassword, register, 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="tech-input"
+              disabled={loading}
             />
           </Form.Group>
           <Form.Group controlId="registerPassword" className="mb-3">
@@ -30,6 +33,7 @@ const RegisterForm = ({ username, setUsername, password, setPassword, register, 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="tech-input"
+              disabled={loading}
             />
           </Form.Group>
           <motion.button
@@ -63,6 +67,7 @@ const LoginForm = ({ username, setUsername, password, setPassword, login, logout
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="tech-input"
+              disabled={loading}
             />
           </Form.Group>
           <Form.Group controlId="loginPassword" className="mb-3">
@@ -73,6 +78,7 @@ const LoginForm = ({ username, setUsername, password, setPassword, login, logout
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="tech-input"
+              disabled={loading}
             />
           </Form.Group>
           <motion.button
@@ -124,6 +130,7 @@ const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) =>
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className="tech-input"
+              disabled={loading}
             />
           </Form.Group>
           <motion.button
@@ -200,14 +207,20 @@ const App = () => {
   const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
 
   const register = async () => {
     setLoading(true);
     setError('');
+    if (!username.trim() || !password.trim()) {
+      setError('用戶名和密碼不能為空');
+      setLoading(false);
+      return;
+    }
     try {
       await axios.post(`${backendUrl}/register`, { username, password }, { withCredentials: true });
       alert('註冊成功');
+      setUsername('');
+      setPassword('');
     } catch (error) {
       setError(error.response?.data?.message || '註冊失敗');
     } finally {
@@ -218,9 +231,16 @@ const App = () => {
   const login = async () => {
     setLoading(true);
     setError('');
+    if (!username.trim() || !password.trim()) {
+      setError('用戶名和密碼不能為空');
+      setLoading(false);
+      return;
+    }
     try {
       await axios.post(`${backendUrl}/login`, { username, password }, { withCredentials: true });
       alert('登入成功');
+      setUsername('');
+      setPassword('');
     } catch (error) {
       setError(error.response?.data?.message || '登入失敗');
     } finally {
@@ -234,6 +254,8 @@ const App = () => {
     try {
       await axios.post(`${backendUrl}/logout`, {}, { withCredentials: true });
       alert('登出成功');
+      setPlan('');
+      setProgress([]);
     } catch (error) {
       setError(error.response?.data?.message || '登出失敗');
     } finally {
@@ -257,10 +279,21 @@ const App = () => {
   const generatePlan = async () => {
     setLoading(true);
     setError('');
+    const trimmedGoal = goal.trim();
+    if (!trimmedGoal) {
+      setError('請輸入學習目標');
+      setLoading(false);
+      return;
+    }
     try {
-      const response = await axios.post(`${backendUrl}/generate_plan`, { goal }, { withCredentials: true });
+      const response = await axios.post(
+        `${backendUrl}/generate_plan`,
+        { goal: trimmedGoal },
+        { withCredentials: true }
+      );
       setPlan(response.data.plan);
       alert('生成計畫成功');
+      setGoal(''); // 清空輸入框
     } catch (error) {
       setError(error.response?.data?.message || '生成計畫失敗');
     } finally {

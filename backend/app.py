@@ -6,6 +6,7 @@ from flask_cors import CORS
 from models import db, User, LearningPlan
 import requests
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')

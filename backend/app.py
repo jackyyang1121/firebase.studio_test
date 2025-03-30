@@ -93,14 +93,21 @@ def logout():
 @login_required
 def generate_plan():
     data = request.get_json()
+    logger.info(f"Generate plan request data: {data}")  # 記錄請求內容
     goal = data.get('goal')
-    if not goal:
+    if not goal:  # 檢查 None 或空字串
+        logger.warning("Missing or empty goal in request")
         return jsonify({'message': '缺少學習目標'}), 400
-    plan = generate_learning_plan(goal)
-    new_plan = LearningPlan(user_id=current_user.id, goal=goal, plan=plan)
-    db.session.add(new_plan)
-    db.session.commit()
-    return jsonify({'plan': plan}), 200
+    try:
+        plan = generate_learning_plan(goal)
+        new_plan = LearningPlan(user_id=current_user.id, goal=goal, plan=plan)
+        db.session.add(new_plan)
+        db.session.commit()
+        logger.info(f"Plan generated for user {current_user.id}: {goal}")
+        return jsonify({'plan': plan}), 200
+    except Exception as e:
+        logger.error(f"Failed to generate plan: {str(e)}")
+        return jsonify({'message': '生成計畫失敗，伺服器錯誤'}), 500
 
 @app.route('/learning_progress', methods=['GET'])
 @login_required

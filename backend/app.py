@@ -73,7 +73,7 @@ def register():
     password = data['password']
     if User.query.filter_by(username=username).first():
         return jsonify({'message': '用戶已存在'}), 400
-    hashed_password = generate_password_hash(password)
+    hashed_password = generate_password_hash(password,method='sha256')
     new_user = User(username=username, password=hashed_password)
     try:
         db.session.add(new_user)

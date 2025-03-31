@@ -447,7 +447,7 @@ const App = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                  >
-                     AI 學習助手 (Bootstrap 版)
+                     AI 學習助手
                  </motion.h1>
 
                 <AnimatePresence mode="wait">

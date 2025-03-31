@@ -15,9 +15,6 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  /* 讓 app-container 直接應用背景圖片，這樣就不需要 App.js 中的 style 屬性了 */
-  /* 你需要確保 background.png 在 public 文件夾中，或者調整路徑 */
-  background-image: url('/background.png');
 }
 
 /* 背景圖片的半透明覆蓋層 (建議保留以增強對比) */

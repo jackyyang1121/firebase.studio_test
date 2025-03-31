@@ -1,7 +1,7 @@
 /* 整體背景和文字顏色 */
 body {
   background-color: #0a0a10; /* 非常深的基礎背景，帶一點藍 */
-  color: #1953dc; /* 預設文字用亮灰色 */
+  color: #f0f0f0; /* *** 修正：改回淺色預設文字以確保可讀性 *** */
 }
 
 .app-container {
@@ -15,9 +15,12 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  /* 讓 app-container 直接應用背景圖片，這樣就不需要 App.js 中的 style 屬性了 */
+  /* 你需要確保 background.png 在 public 文件夾中，或者調整路徑 */
+  background-image: url('/background.png');
 }
 
-/* 背景圖片的半透明覆蓋層 */
+/* 背景圖片的半透明覆蓋層 (建議保留以增強對比) */
 .app-container::before {
   content: '';
   position: absolute;
@@ -115,7 +118,7 @@ body {
 
 /* 主標題 */
 .main-title {
-    color: #3a23cc;
+    color: #3a23cc; /* *** 修改：使用你指定的藍色 *** */
     font-weight: 700;
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
     letter-spacing: 1px; /* 增加字母間距 */
@@ -180,7 +183,7 @@ body {
     margin-bottom: 0.75rem; /* 標題下方間距 */
 }
 .latest-plan-section p {
-    color: #95168b; /* 計畫內容文字顏色 */
+    color: #e0e8ff; /* *** 修正：改回淺藍色文字以確保可讀性 *** */
     font-size: 0.95rem; /* 字體大小調整 */
 }
 
@@ -215,5 +218,6 @@ body {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
 
 

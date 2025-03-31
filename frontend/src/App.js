@@ -7,11 +7,10 @@ import {
 } from 'react-bootstrap';
 import './App.css'; // 引入自訂 CSS
 
-
 // --- Configuration ---
 const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
-// 使用你的背景圖片 URL，或保持這個範例 URL
-const backgroundImageUrl = 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
+// *** 背景圖片 URL ***
+const backgroundImageUrl = 'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1918&q=80'; // 抽象太空/星雲感背景
 
 // --- Axios Instance ---
 const apiClient = axios.create({
@@ -259,8 +258,6 @@ const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan
 
 // --- App Component ---
 
-
-
 const App = () => {
     const [view, setView] = useState('login'); // 'login', 'register', 'dashboard'
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -279,8 +276,17 @@ const App = () => {
             return response;
         } catch (error) {
             const message = error.response?.data?.message || error.message || `${errorMessagePrefix}失敗`;
-            toast.error(message);
-            console.error(errorMessagePrefix, error);
+            // 不顯示 CORS 錯誤給使用者，只在控制台記錄
+            if (!message.toLowerCase().includes('cors')) {
+                 toast.error(message);
+            }
+            console.error(errorMessagePrefix, error); // 仍在控制台記錄完整錯誤
+            // 針對 CORS 錯誤給出提示
+            if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
+                 console.warn("偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定是否允許來自 " + window.location.origin + " 的請求。");
+                 // 可以選擇性地給使用者一個通用提示，但不顯示技術細節
+                 // toast.error("無法連接到伺服器，請稍後再試或聯繫管理員。");
+            }
             return null;
         } finally {
             setLoadingFunc(false);
@@ -355,13 +361,15 @@ const App = () => {
             const response = await apiClient.get('/learning_progress');
             setProgress(response.data || []);
         } catch (error) {
-            if (setLoad) {
-                 const message = error.response?.data?.message || error.message || '獲取進度失敗';
+            const message = error.response?.data?.message || error.message || '獲取進度失敗';
+            if (setLoad && !message.toLowerCase().includes('cors')) { // 只在手動刷新且非 CORS 錯誤時顯示 toast
                  toast.error(message);
-                 console.error('獲取進度', error);
-            } else {
-                 console.error("後台獲取進度失敗:", error.response?.data?.message || error.message);
             }
+            // 仍在控制台記錄錯誤
+            console.error('獲取進度', error);
+             if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
+                 console.warn("獲取進度時偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定。");
+             }
             setProgress([]);
         } finally {
             if (setLoad) setDataLoading(false);
@@ -379,7 +387,11 @@ const App = () => {
         } catch (error) {
             setIsLoggedIn(false);
             setView('login');
-            console.log("尚未登入或 Session 過期");
+            // 不再顯示 "尚未登入或 Session 過期" 給使用者，但在控制台記錄
+            console.log("checkLoginStatus 失敗: 尚未登入或 Session 過期 / CORS 問題");
+             if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
+                 console.warn("檢查登入狀態時偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定。");
+             }
         } finally {
             setInitialLoading(false); // 結束檢查，隱藏初始載入
         }
@@ -414,6 +426,7 @@ const App = () => {
                         authLoading={authLoading} // 傳遞登出載入狀態
                     />
                 ) : (
+                    // 如果 view 是 dashboard 但未登入，強制導回登入頁
                     <LoginPage setView={setView} handleLogin={handleLogin} loading={authLoading} />
                 );
             case 'login':

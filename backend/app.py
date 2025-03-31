@@ -5,7 +5,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 from models import db, User, LearningPlan
-import requests
+import openai  # 引入 OpenAI 庫
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,20 +29,30 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-HF_API_KEY = os.getenv('HF_API_KEY')
-HF_API_URL = "https://api-inference.huggingface.co/models/distilgpt2"
+# OpenAI API 金鑰
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+openai.api_key = OPENAI_API_KEY
 
 def generate_learning_plan(goal):
     logger.info(f"Generating plan for goal: {goal}")
-    prompt = f"為目標 '{goal}' 生成一個學習課程，包含：1. 簡短的概念講解（50字以內）2. 一個程式碼範例3. 一個簡單的練習題"
-    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
-    payload = {"inputs": prompt, "parameters": {"max_length": 300, "temperature": 0.7}}
-    response = requests.post(HF_API_URL, headers=headers, json=payload)
-    if response.status_code == 200:
-        result = response.json()[0]['generated_text']
-        return result.strip().rsplit('.', 1)[0] + '.'
-    logger.error(f"HF API failed: {response.status_code}")
-    return f"生成失敗，錯誤碼：{response.status_code}"
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",  # 您可以選擇其他模型，例如 "gpt-4"
+            messages=[
+                {"role": "user", "content": goal}  # 直接使用前端傳來的 goal 作為內容
+            ],
+            max_tokens=500,  # 增加 max_tokens 以應對更複雜的學習計畫
+            temperature=0.7
+        )
+        if response.choices:
+            result = response.choices[0].message.content
+            return result.strip()
+        else:
+            logger.warning("OpenAI API returned an empty response.")
+            return "生成失敗，OpenAI API 返回空回應"
+    except Exception as e:
+        logger.error(f"OpenAI API failed: {str(e)}")
+        return f"生成失敗，OpenAI API 錯誤：{str(e)}"
 
 @app.route('/')
 def home():

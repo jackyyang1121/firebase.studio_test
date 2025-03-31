@@ -142,7 +142,6 @@ const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) =>
                     >
                         {loading ? <Spinner as="span" animation="border" size="sm" /> : '生成計畫'}
                     </motion.button>
-                    {loading && <Spinner animation="border" role="status" className="mt-3" />} {/* 顯示載入指示器 */}
                     {plan && (
                         <motion.div
                             className="mt-3 tech-plan"
@@ -150,7 +149,7 @@ const PlanGenerator = ({ goal, setGoal, generatePlan, plan, loading, error }) =>
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <p>以下是為你建立的學習計畫:</p>
+                            <p>以下是為你建立的學習計畫:</p> {/* 添加前綴訊息 */}
                             {plan}
                         </motion.div>
                     )}
@@ -294,7 +293,7 @@ const App = () => {
                 { withCredentials: true }
             );
             setPlan(response.data.plan);
-            // alert('生成計畫成功'); // 移除成功提示，直接顯示計畫
+            alert('生成計畫成功');
             setGoal(''); // 清空輸入框
         } catch (error) {
             setError(error.response?.data?.message || '生成計畫失敗');

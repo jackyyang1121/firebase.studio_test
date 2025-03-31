@@ -3,7 +3,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'react-hot-toast';
 import {
-    Container, Row, Col, Card, Form, Button, Spinner, Alert, ListGroup, Nav
+    Container, Row, Col, Card, Form, Button, Spinner, Alert, ListGroup
 } from 'react-bootstrap';
 import './App.css'; // 引入自訂 CSS
 

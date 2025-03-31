@@ -89,6 +89,21 @@ def logout():
     logout_user()
     return jsonify({'message': '登出成功'}), 200
 
+
+@app.route('/check_login', methods=['GET'])
+@login_required  # 使用 login_required 裝飾器
+def check_login_status():
+    """
+    檢查用戶登入狀態。
+    如果用戶已登入 (@login_required 會通過)，則返回成功訊息。
+    如果用戶未登入，@login_required 會自動處理，通常返回 401 Unauthorized，
+    前端的 catch 區塊會捕捉到這個錯誤。
+    """
+    logger.info(f"Login status check: User {current_user.username} is authenticated.")
+    # 因為有 @login_required，能執行到這裡就表示用戶已登入
+    return jsonify({'message': f'用戶 {current_user.username} 已登入'}), 200
+
+
 @app.route('/generate_plan', methods=['POST'])
 @login_required
 def generate_plan():

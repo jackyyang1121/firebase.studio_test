@@ -115,7 +115,7 @@ body {
 
 /* 主標題 */
 .main-title {
-    color: #ffffff;
+    color: #3a23cc;
     font-weight: 700;
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
     letter-spacing: 1px; /* 增加字母間距 */
@@ -180,7 +180,7 @@ body {
     margin-bottom: 0.75rem; /* 標題下方間距 */
 }
 .latest-plan-section p {
-    color: #e0e8ff; /* 計畫內容文字顏色 */
+    color: #95168b; /* 計畫內容文字顏色 */
     font-size: 0.95rem; /* 字體大小調整 */
 }
 

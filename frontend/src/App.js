@@ -10,7 +10,7 @@ import './App.css'; // 引入自訂 CSS
 // --- Configuration ---
 const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
 // *** 背景圖片 URL ***
-const backgroundImageUrl = 'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1918&q=80'; // 抽象太空/星雲感背景
+const backgroundImageUrl = '/background.png'; 
 
 // --- Axios Instance ---
 const apiClient = axios.create({

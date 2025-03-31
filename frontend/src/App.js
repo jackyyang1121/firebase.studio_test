@@ -7,6 +7,7 @@ import {
 } from 'react-bootstrap';
 import './App.css'; // 引入自訂 CSS
 
+
 // --- Configuration ---
 const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
 // 使用你的背景圖片 URL，或保持這個範例 URL
@@ -258,8 +259,7 @@ const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan
 
 // --- App Component ---
 
-// 引入自訂 CSS (假設放在 src/App.css)
-import './App.css';
+
 
 const App = () => {
     const [view, setView] = useState('login'); // 'login', 'register', 'dashboard'

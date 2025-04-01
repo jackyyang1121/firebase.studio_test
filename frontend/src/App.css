@@ -117,7 +117,7 @@ body {
   
   /* 主標題 */
   .main-title {
-      color: #3a23cc!important; /* *** 保持你指定的藍色 *** */
+      color: #3da8ef!important; /* *** 保持你指定的藍色 *** */
       font-weight: 700;
       text-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
       letter-spacing: 1px; /* 增加字母間距 */

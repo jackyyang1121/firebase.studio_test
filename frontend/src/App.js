@@ -1,3 +1,4 @@
+import './App.css'; // 引入自訂 CSS
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -5,7 +6,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import {
     Container, Row, Col, Card, Form, Button, Spinner, Alert, ListGroup
 } from 'react-bootstrap';
-import './App.css'; // 引入自訂 CSS
+
 
 // --- Configuration ---
 const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
@@ -117,7 +118,7 @@ const PlanGenerator = ({ generatePlan, loading }) => {
                      <Form.Label>學習目標</Form.Label>
                      <Form.Control
                          type="text"
-                         placeholder="例如：學習 React Hooks"
+                         placeholder="例如：學習 Python、英語口說能力、影片剪輯..."
                          value={goal}
                          onChange={(e) => setGoal(e.target.value)}
                          disabled={loading}

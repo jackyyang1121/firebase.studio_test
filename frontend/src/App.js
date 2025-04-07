@@ -168,7 +168,7 @@ const PlanGenerator = ({ generatePlan, loading }) => {
                             <option value="進階">進階</option>
                         </Form.Select>
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="imagingStyle">
+                    <Form.Group className="mb-3" controlId="learningStyle">
                         <Form.Label>學習風格</Form.Label>
                         <Form.Select
                             name="learningStyle"
@@ -257,9 +257,11 @@ const LecturePage = ({ planId, planContent, setView }) => {
             setLoading(true);
             try {
                 const response = await apiClient.get(`/lectures/${planId}`);
-                setLectures(response.data);
+                console.log('Fetched lectures:', response.data); // 添加日誌檢查回應
+                setLectures(response.data || []);
             } catch (error) {
                 toast.error('獲取講義失敗');
+                console.error('Fetch lectures error:', error);
             } finally {
                 setLoading(false);
             }
@@ -271,10 +273,18 @@ const LecturePage = ({ planId, planContent, setView }) => {
         setLoading(true);
         try {
             const response = await apiClient.post('/generate_lecture', { plan_id: planId, section });
-            setLectures([...lectures, { section, content: response.data.lecture, completed: false, id: response.data.id }]);
+            console.log('Generated lecture response:', response.data); // 添加日誌檢查回應
+            const newLecture = {
+                id: response.data.id,
+                section: section,
+                content: response.data.lecture,
+                completed: false
+            };
+            setLectures(prevLectures => [...prevLectures, newLecture]);
             toast.success('講義生成成功');
         } catch (error) {
             toast.error('生成講義失敗');
+            console.error('Generate lecture error:', error);
         } finally {
             setLoading(false);
         }
@@ -283,10 +293,13 @@ const LecturePage = ({ planId, planContent, setView }) => {
     const handleCompleteLecture = async (lectureId) => {
         try {
             await apiClient.post('/complete_lecture', { lecture_id: lectureId });
-            setLectures(lectures.map(l => l.id === lectureId ? { ...l, completed: true } : l));
+            setLectures(prevLectures =>
+                prevLectures.map(l => (l.id === lectureId ? { ...l, completed: true } : l))
+            );
             toast.success('講義已標記為完成');
         } catch (error) {
             toast.error('標記失敗');
+            console.error('Complete lecture error:', error);
         }
     };
 
@@ -347,37 +360,7 @@ const LecturePage = ({ planId, planContent, setView }) => {
     );
 };
 
-// --- Main Page Components ---
-const LoginPage = ({ setView, handleLogin, loading }) => (
-    <AuthForm
-        title="登入"
-        fields={[
-            { id: 'username', label: '用戶名', placeholder: '輸入用戶名' },
-            { id: 'password', label: '密碼', type: 'password', placeholder: '輸入密碼' }
-        ]}
-        submitAction={handleLogin}
-        submitText="登入"
-        loading={loading}
-        switchFormAction={() => setView('register')}
-        switchFormText="還沒有帳號？ 前往註冊"
-    />
-);
-
-const RegisterPage = ({ setView, handleRegister, loading }) => (
-    <AuthForm
-        title="註冊"
-        fields={[
-            { id: 'username', label: '用戶名', placeholder: '設定用戶名' },
-            { id: 'password', label: '密碼', type: 'password', placeholder: '設定密碼' }
-        ]}
-        submitAction={handleRegister}
-        submitText="註冊"
-        loading={loading}
-        switchFormAction={() => setView('login')}
-        switchFormText="已經有帳號？ 前往登入"
-    />
-);
-
+// --- Dashboard Page ---
 const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan, loading, authLoading, setView }) => (
     <Container fluid>
         <Row className="mb-4 align-items-center">
@@ -399,9 +382,9 @@ const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan
                 <PlanGenerator generatePlan={generatePlan} loading={loading} />
             </Col>
             <Col md={6}>
-                <Card className="custom-card mb-4 h-100">
+                <Card className="custom-card mb-4">
                     <Card.Header>學習進度 & 計畫</Card.Header>
-                    <Card.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <Card.Body style={{ overflowY: 'auto' }}> {/* 移除 maxHeight，讓內容完整顯示 */}
                         {plan && (
                             <motion.div
                                 className="latest-plan-section"
@@ -446,6 +429,37 @@ const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan
     </Container>
 );
 
+// --- Main Page Components ---
+const LoginPage = ({ setView, handleLogin, loading }) => (
+    <AuthForm
+        title="登入"
+        fields={[
+            { id: 'username', label: '用戶名', placeholder: '輸入用戶名' },
+            { id: 'password', label: '密碼', type: 'password', placeholder: '輸入密碼' }
+        ]}
+        submitAction={handleLogin}
+        submitText="登入"
+        loading={loading}
+        switchFormAction={() => setView('register')}
+        switchFormText="還沒有帳號？ 前往註冊"
+    />
+);
+
+const RegisterPage = ({ setView, handleRegister, loading }) => (
+    <AuthForm
+        title="註冊"
+        fields={[
+            { id: 'username', label: '用戶名', placeholder: '設定用戶名' },
+            { id: 'password', label: '密碼', type: 'password', placeholder: '設定密碼' }
+        ]}
+        submitAction={handleRegister}
+        submitText="註冊"
+        loading={loading}
+        switchFormAction={() => setView('login')}
+        switchFormText="已經有帳號？ 前往登入"
+    />
+);
+
 // --- App Component ---
 const App = () => {
     const [view, setView] = useState('login');
@@ -465,6 +479,7 @@ const App = () => {
             return response;
         } catch (error) {
             toast.error(error.response?.data?.message || `${errorMessagePrefix}失敗`);
+            console.error(`${errorMessagePrefix} error:`, error);
             return null;
         } finally {
             setLoadingFunc(false);

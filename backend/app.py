@@ -57,7 +57,7 @@ def generate_learning_plan(form_data):
 用戶的語言偏好：{language_preference}
 用戶的學習節奏：{learning_pace}
 用戶每周可用學習時間：{weekly_time} 小時
-若用戶選擇中文請使用繁體中文回應。
+若用戶語言選擇中文請使用繁體中文回應。
 
 請根據用戶的經驗水平生成相應深度的學習內容，並適用於任何學習目標，以下是舉例:
 - 初學者：從基礎入門開始，例如基本語法、資料分析。
@@ -91,6 +91,9 @@ def generate_learning_plan(form_data):
 
 def generate_lecture(plan_id, section):
     plan = LearningPlan.query.get(plan_id)
+    if not plan:
+        logger.error(f"Plan ID {plan_id} not found")
+        return "計畫不存在"
     prompt = f"""
 根據以下學習計畫生成詳細的學習講義：
 {plan.plan}
@@ -99,6 +102,7 @@ def generate_lecture(plan_id, section):
 - 詳細的解釋和範例
 - 程式碼片段（如果適用）
 - 精選的外部資源連結（1-2 個高品質資源，如 YouTube 影片、官方文件等）
+盡量以免費資源為優先
 
 請使用繁體中文生成講義。
 """
@@ -112,6 +116,7 @@ def generate_lecture(plan_id, section):
             max_tokens=1000,
             temperature=0.7
         )
+        logger.info(f"Generated lecture for plan {plan_id}, section: {section}")
         return response.choices[0].message.content.strip()
     except Exception as e:
         logger.error(f"OpenAI API failed: {str(e)}")
@@ -124,17 +129,22 @@ def generate_lecture_route():
     plan_id = data.get('plan_id')
     section = data.get('section')
     if not plan_id or not section:
+        logger.error("Missing plan_id or section in request")
         return jsonify({'message': '缺少 plan_id 或 section'}), 400
     lecture_content = generate_lecture(plan_id, section)
+    if lecture_content.startswith("生成失敗"):
+        return jsonify({'message': lecture_content}), 500
     new_lecture = Lecture(plan_id=plan_id, section=section, content=lecture_content)
     db.session.add(new_lecture)
     db.session.commit()
-    return jsonify({'lecture': lecture_content, 'id': new_lecture.id}), 200  # 返回講義 ID
+    logger.info(f"Lecture created with ID: {new_lecture.id}")
+    return jsonify({'lecture': lecture_content, 'id': new_lecture.id}), 200
 
 @app.route('/lectures/<int:plan_id>', methods=['GET'])
 @login_required
 def get_lectures(plan_id):
     lectures = Lecture.query.filter_by(plan_id=plan_id).all()
+    logger.info(f"Returning {len(lectures)} lectures for plan {plan_id}")
     return jsonify([{'id': l.id, 'section': l.section, 'content': l.content, 'completed': l.completed} for l in lectures]), 200
 
 @app.route('/complete_lecture', methods=['POST'])
@@ -144,9 +154,11 @@ def complete_lecture():
     lecture_id = data.get('lecture_id')
     lecture = Lecture.query.get(lecture_id)
     if not lecture:
+        logger.error(f"Lecture ID {lecture_id} not found")
         return jsonify({'message': '講義不存在'}), 404
     lecture.completed = True
     db.session.commit()
+    logger.info(f"Lecture {lecture_id} marked as completed")
     return jsonify({'message': '講義已標記為完成'}), 200
 
 @app.route('/')
@@ -197,15 +209,19 @@ def generate_plan():
     if not data or 'goal' not in data:
         return jsonify({'message': '缺少學習目標'}), 400
     plan = generate_learning_plan(data)
+    if plan.startswith("生成失敗"):
+        return jsonify({'message': plan}), 500
     new_plan = LearningPlan(user_id=current_user.id, goal=data['goal'], plan=plan)
     db.session.add(new_plan)
     db.session.commit()
+    logger.info(f"Plan created with ID: {new_plan.id}")
     return jsonify({'plan': plan, 'plan_id': new_plan.id}), 200
 
 @app.route('/learning_progress', methods=['GET'])
 @login_required
 def learning_progress():
     plans = LearningPlan.query.filter_by(user_id=current_user.id).all()
+    logger.info(f"Returning {len(plans)} plans for user {current_user.id}")
     return jsonify([{'id': p.id, 'goal': p.goal, 'plan': p.plan, 'created_at': str(p.created_at)} for p in plans]), 200
 
 with app.app_context():

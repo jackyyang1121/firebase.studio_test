@@ -14,3 +14,10 @@ class LearningPlan(db.Model):
     goal = db.Column(db.String(200), nullable=False)
     plan = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.now())
+
+class Lecture(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    plan_id = db.Column(db.Integer, db.ForeignKey('learning_plan.id'), nullable=False)
+    section = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    completed = db.Column(db.Boolean, default=False)

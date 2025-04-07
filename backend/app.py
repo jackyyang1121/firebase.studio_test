@@ -42,7 +42,7 @@ def generate_learning_plan(form_data):
     learning_style = form_data.get('learningStyle', '視覺型')
     motivation = form_data.get('motivation', '職業發展')
     resource_preference = form_data.get('resourcePreference', '線上課程')
-    language_preference = form_data.get('languagePreference', '中文')
+    language_preference = form_data.get('languagePreference', '繁體中文')
     learning_pace = form_data.get('learningPace', '穩步前進')
 
     prompt = f"""
@@ -55,6 +55,7 @@ def generate_learning_plan(form_data):
 用戶的資源偏好：{resource_preference}
 用戶的語言偏好：{language_preference}
 用戶的學習節奏：{learning_pace}
+若用戶選擇中文請用繁體中文生成計畫
 
 請生成一個詳細的學習計畫，包含以下元素：
 1. **概述**：簡要描述學習目標和預期成果。

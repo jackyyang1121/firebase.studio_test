@@ -113,6 +113,7 @@ const PlanGenerator = ({ generatePlan, loading }) => {
             toast.error('請輸入學習目標');
             return;
         }
+        console.log("Sending form data to backend:", formData); // 新增日誌檢查
         generatePlan(formData);
     };
 

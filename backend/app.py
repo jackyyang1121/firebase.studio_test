@@ -36,13 +36,13 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 openai.api_key = OPENAI_API_KEY
 
 def generate_learning_plan(form_data):
-    goal = form_data['goal']
+    goal = form_data.get('goal', '')
     weekly_time = form_data.get('weeklyTime', 5)
     experience_level = form_data.get('experienceLevel', '初學者')
     learning_style = form_data.get('learningStyle', '視覺型')
     motivation = form_data.get('motivation', '職業發展')
     resource_preference = form_data.get('resourcePreference', '線上課程')
-    language_preference = form_data.get('languagePreference', '繁體中文')
+    language_preference = form_data.get('languagePreference', '中文')
     learning_pace = form_data.get('learningPace', '穩步前進')
 
     prompt = f"""
@@ -55,9 +55,9 @@ def generate_learning_plan(form_data):
 用戶的資源偏好：{resource_preference}
 用戶的語言偏好：{language_preference}
 用戶的學習節奏：{learning_pace}
-若用戶選擇中文請用繁體中文生成計畫
+若語言偏好選擇中文請使用繁體中文生成計畫。
 
-請生成一個詳細的學習計畫，包含以下元素：
+請生成一個詳細的學習計畫，必須包含以下元素：
 1. **概述**：簡要描述學習目標和預期成果。
 2. **步驟**：列出具體的學習步驟或階段，每個步驟應包含：
    - 學習內容
@@ -66,21 +66,23 @@ def generate_learning_plan(form_data):
 3. **時間安排**：根據用戶的每周可用時間和學習節奏，建議一個合理的學習進度。
 4. **評估方法**：建議如何評估學習進展和成果。
 
-請確保計畫具體、可操作，並避免不必要的冗言贅字。
+請確保計畫具體、可操作，並避免不必要的冗言贅字。不得生成非結構化的回應。
 """
+    logger.info(f"Generated Prompt: {prompt}")
 
     try:
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "你是一個專業的學習計畫生成器。"},
+                {"role": "system", "content": "你是一個專業的學習計畫生成器，請嚴格按照用戶指定的格式生成結構化計畫，並使用繁體中文。"},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=1000,
-            temperature=0.7
+            temperature=0.5  # 降低 temperature 以增加輸出一致性
         )
         if response.choices:
             result = response.choices[0].message.content
+            logger.info(f"OpenAI Response: {result}")
             return result.strip()
         else:
             logger.warning("OpenAI API returned an empty response.")

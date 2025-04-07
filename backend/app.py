@@ -10,14 +10,25 @@ import openai  # 引入 OpenAI 庫
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 app = Flask(__name__)
 logger.info("Starting Flask app")
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+
+# 使用cloud SQL
+#app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+#app.config['SESSION_COOKIE_SECURE'] = True
+#logger.info(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+
+# 使用 SQLite 配置，保留正式環境的其他設定
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')  
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///local_database.db'  # 改為 SQLite
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-app.config['SESSION_COOKIE_SECURE'] = True
-logger.info(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+app.config['SESSION_COOKIE_SAMESITE'] = 'None' 
+app.config['SESSION_COOKIE_SECURE'] = True      
+logger.info(f"Using SQLite database at: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
 CORS(app, resources={r"/*": {"origins": ["https://ai-learning-assistant-454719.web.app", "https://ai-learning-assistant-454719.firebaseapp.com"], "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"], "supports_credentials": True}})
 

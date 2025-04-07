@@ -1,4 +1,4 @@
-import './App.css'; // 引入自訂 CSS
+import './App.css';
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,11 +7,9 @@ import {
     Container, Row, Col, Card, Form, Button, Spinner, Alert, ListGroup
 } from 'react-bootstrap';
 
-
 // --- Configuration ---
 const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
-// *** 背景圖片 URL ***
-const backgroundImageUrl = '/background.png'; 
+const backgroundImageUrl = '/background.png';
 
 // --- Axios Instance ---
 const apiClient = axios.create({
@@ -20,8 +18,6 @@ const apiClient = axios.create({
 });
 
 // --- Helper Components ---
-
-// 封裝後的載入指示器
 const LoadingSpinner = ({ size = 'sm', className = '' }) => (
     <Spinner animation="border" size={size} role="status" className={className}>
         <span className="visually-hidden">載入中...</span>
@@ -29,7 +25,6 @@ const LoadingSpinner = ({ size = 'sm', className = '' }) => (
 );
 
 // --- Authentication Components ---
-
 const AuthForm = ({ title, fields, submitAction, submitText, loading, switchFormAction, switchFormText }) => {
     const [formData, setFormData] = useState(() =>
         fields.reduce((acc, field) => {
@@ -52,7 +47,7 @@ const AuthForm = ({ title, fields, submitAction, submitText, loading, switchForm
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="w-100" // 確保 motion div 佔滿寬度
+            className="w-100"
         >
             <Card className="custom-card w-100 mx-auto" style={{ maxWidth: '450px' }}>
                 <Card.Header as="h5" className="text-center">{title}</Card.Header>
@@ -97,41 +92,146 @@ const AuthForm = ({ title, fields, submitAction, submitText, loading, switchForm
 };
 
 // --- Dashboard Components ---
-
 const PlanGenerator = ({ generatePlan, loading }) => {
-    const [goal, setGoal] = useState('');
+    const [formData, setFormData] = useState({
+        goal: '',
+        weeklyTime: 5,
+        experienceLevel: '初學者',
+        learningStyle: '視覺型',
+        motivation: '職業發展',
+        resourcePreference: '線上課程',
+        languagePreference: '中文',
+        learningPace: '穩步前進'
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
     const handleGenerate = () => {
-        if (!goal.trim()) {
+        if (!formData.goal.trim()) {
             toast.error('請輸入學習目標');
             return;
         }
-        generatePlan(goal);
-        setGoal(''); // 清空輸入
+        generatePlan(formData);
     };
 
     return (
         <Card className="custom-card mb-4 h-100">
-            <Card.Header>生成學習計畫</Card.Header>
+            <Card.Header>生成個人化學習計畫</Card.Header>
             <Card.Body className="d-flex flex-column">
-                 <Form.Group className="mb-3" controlId="goal">
-                     <Form.Label>學習目標</Form.Label>
-                     <Form.Control
-                         type="text"
-                         placeholder="例如：學習 Python、英語口說能力、影片剪輯..."
-                         value={goal}
-                         onChange={(e) => setGoal(e.target.value)}
-                         disabled={loading}
-                     />
-                 </Form.Group>
-                 <Button
-                     variant="info"
-                     onClick={handleGenerate}
-                     disabled={loading}
-                     className="mt-auto" // 將按鈕推到底部
-                 >
-                     {loading ? <LoadingSpinner size="sm" /> : '生成計畫'}
-                 </Button>
+                <Form>
+                    <Form.Group className="mb-3" controlId="goal">
+                        <Form.Label>學習目標</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="goal"
+                            placeholder="例如：學習 Python、提升英語口說、掌握影片剪輯"
+                            value={formData.goal}
+                            onChange={handleChange}
+                            disabled={loading}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="weeklyTime">
+                        <Form.Label>每周可用學習時間（小時）</Form.Label>
+                        <Form.Control
+                            type="number"
+                            name="weeklyTime"
+                            min="1"
+                            placeholder="輸入每周可投入的學習小時數"
+                            value={formData.weeklyTime}
+                            onChange={handleChange}
+                            disabled={loading}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="experienceLevel">
+                        <Form.Label>經驗水平</Form.Label>
+                        <Form.Select
+                            name="experienceLevel"
+                            value={formData.experienceLevel}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="初學者">初學者</option>
+                            <option value="中級">中級</option>
+                            <option value="進階">進階</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="learningStyle">
+                        <Form.Label>學習風格</Form.Label>
+                        <Form.Select
+                            name="learningStyle"
+                            value={formData.learningStyle}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="視覺型">視覺型（喜歡圖表、影片）</option>
+                            <option value="聽覺型">聽覺型（喜歡講座、播客）</option>
+                            <option value="動手實作型">動手實作型（喜歡實操、練習）</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="motivation">
+                        <Form.Label>學習動機</Form.Label>
+                        <Form.Select
+                            name="motivation"
+                            value={formData.motivation}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="職業發展">職業發展</option>
+                            <option value="興趣愛好">興趣愛好</option>
+                            <option value="學術研究">學術研究</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="resourcePreference">
+                        <Form.Label>資源偏好</Form.Label>
+                        <Form.Select
+                            name="resourcePreference"
+                            value={formData.resourcePreference}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="線上課程">線上課程</option>
+                            <option value="書籍">書籍</option>
+                            <option value="影片教學">影片教學</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="languagePreference">
+                        <Form.Label>語言偏好</Form.Label>
+                        <Form.Select
+                            name="languagePreference"
+                            value={formData.languagePreference}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="中文">中文</option>
+                            <option value="英文">英文</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="learningPace">
+                        <Form.Label>學習節奏</Form.Label>
+                        <Form.Select
+                            name="learningPace"
+                            value={formData.learningPace}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="快速掌握">快速掌握</option>
+                            <option value="穩步前進">穩步前進</option>
+                            <option value="深入學習">深入學習</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                            variant="info"
+                            onClick={handleGenerate}
+                            disabled={loading}
+                            className="mt-3 w-100 gradient-button"
+                        >
+                            {loading ? <LoadingSpinner size="sm" /> : '生成計畫'}
+                        </Button>
+                    </motion.div>
+                </Form>
             </Card.Body>
         </Card>
     );
@@ -152,7 +252,6 @@ const LearningProgress = ({ progress, getProgress, loading, plan }) => (
             </Button>
         </Card.Header>
         <Card.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
-            {/* Display Latest Generated Plan */}
             {plan && (
                 <motion.div
                     className="latest-plan-section"
@@ -164,12 +263,10 @@ const LearningProgress = ({ progress, getProgress, loading, plan }) => (
                     <p className="text-light small whitespace-pre-wrap">{plan}</p>
                 </motion.div>
             )}
-
-            {/* Display Progress History */}
-             <div className="progress-history-section">
+            <div className="progress-history-section">
                 <h4>學習歷史記錄:</h4>
                 {loading && progress.length === 0 && <div className="text-center p-3"><LoadingSpinner /></div>}
-                {!loading && progress.length === 0 && !plan && ( // Also check if plan exists
+                {!loading && progress.length === 0 && !plan && (
                     <Alert variant="secondary" className="text-center small">尚無進度記錄。</Alert>
                 )}
                 {progress.length > 0 && (
@@ -198,7 +295,6 @@ const LearningProgress = ({ progress, getProgress, loading, plan }) => (
 );
 
 // --- Main Page Components ---
-
 const LoginPage = ({ setView, handleLogin, loading }) => (
     <AuthForm
         title="登入"
@@ -230,63 +326,56 @@ const RegisterPage = ({ setView, handleRegister, loading }) => (
 );
 
 const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan, loading, authLoading }) => (
-     <Container fluid>
-         <Row className="mb-4 align-items-center">
-             <Col>
-                 <h1 className="main-title h3">學習儀表板</h1>
-             </Col>
-             <Col xs="auto">
-                 <Button
-                     variant="outline-light"
-                     onClick={handleLogout}
-                     disabled={authLoading}
-                 >
-                     {authLoading ? <LoadingSpinner size="sm" /> : '登出'}
-                 </Button>
-             </Col>
-         </Row>
-         <Row>
-             <Col md={6} className="mb-4 mb-md-0">
-                 <PlanGenerator generatePlan={generatePlan} loading={loading} />
-             </Col>
-             <Col md={6}>
-                 <LearningProgress progress={progress} getProgress={getProgress} loading={loading} plan={plan} />
-             </Col>
-         </Row>
-     </Container>
+    <Container fluid>
+        <Row className="mb-4 align-items-center">
+            <Col>
+                <h1 className="main-title h3">學習儀表板</h1>
+            </Col>
+            <Col xs="auto">
+                <Button
+                    variant="outline-light"
+                    onClick={handleLogout}
+                    disabled={authLoading}
+                >
+                    {authLoading ? <LoadingSpinner size="sm" /> : '登出'}
+                </Button>
+            </Col>
+        </Row>
+        <Row>
+            <Col md={6} className="mb-4 mb-md-0">
+                <PlanGenerator generatePlan={generatePlan} loading={loading} />
+            </Col>
+            <Col md={6}>
+                <LearningProgress progress={progress} getProgress={getProgress} loading={loading} plan={plan} />
+            </Col>
+        </Row>
+    </Container>
 );
 
-
 // --- App Component ---
-
 const App = () => {
-    const [view, setView] = useState('login'); // 'login', 'register', 'dashboard'
+    const [view, setView] = useState('login');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [plan, setPlan] = useState('');
     const [progress, setProgress] = useState([]);
-    const [initialLoading, setInitialLoading] = useState(true); // 初始檢查載入狀態
-    const [authLoading, setAuthLoading] = useState(false); // 登入/註冊/登出 載入狀態
-    const [dataLoading, setDataLoading] = useState(false); // 獲取計畫/進度 載入狀態
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [authLoading, setAuthLoading] = useState(false);
+    const [dataLoading, setDataLoading] = useState(false);
 
-    // --- API Call Functions (與之前版本相同，使用 toast) ---
     const handleApiCall = async (apiFunc, setLoadingFunc, successMessage, errorMessagePrefix) => {
         setLoadingFunc(true);
         try {
             const response = await apiFunc();
-            if (successMessage) toast.success(successMessage); // 只有成功訊息才顯示
+            if (successMessage) toast.success(successMessage);
             return response;
         } catch (error) {
             const message = error.response?.data?.message || error.message || `${errorMessagePrefix}失敗`;
-            // 不顯示 CORS 錯誤給使用者，只在控制台記錄
             if (!message.toLowerCase().includes('cors')) {
-                 toast.error(message);
+                toast.error(message);
             }
-            console.error(errorMessagePrefix, error); // 仍在控制台記錄完整錯誤
-            // 針對 CORS 錯誤給出提示
+            console.error(errorMessagePrefix, error);
             if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
-                 console.warn("偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定是否允許來自 " + window.location.origin + " 的請求。");
-                 // 可以選擇性地給使用者一個通用提示，但不顯示技術細節
-                 // toast.error("無法連接到伺服器，請稍後再試或聯繫管理員。");
+                console.warn("偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定是否允許來自 " + window.location.origin + " 的請求。");
             }
             return null;
         } finally {
@@ -324,7 +413,7 @@ const App = () => {
         if (response) {
             setIsLoggedIn(true);
             setView('dashboard');
-            await getProgress(false); // 登入後獲取進度，不顯示載入狀態
+            await getProgress(false);
         }
     };
 
@@ -343,91 +432,85 @@ const App = () => {
         }
     };
 
-    const generatePlan = async (goal) => {
+    const generatePlan = async (formData) => {
         const response = await handleApiCall(
-            () => apiClient.post('/generate_plan', { goal }),
+            () => apiClient.post('/generate_plan', formData),
             setDataLoading,
             '學習計畫生成成功！',
             '生成計畫'
         );
         if (response) {
             setPlan(response.data.plan);
-            await getProgress(false); // 生成後刷新進度，不顯示載入狀態
+            await getProgress(false);
         }
     };
 
     const getProgress = useCallback(async (setLoad = true) => {
-         if (setLoad) setDataLoading(true);
-         try {
+        if (setLoad) setDataLoading(true);
+        try {
             const response = await apiClient.get('/learning_progress');
             setProgress(response.data || []);
         } catch (error) {
             const message = error.response?.data?.message || error.message || '獲取進度失敗';
-            if (setLoad && !message.toLowerCase().includes('cors')) { // 只在手動刷新且非 CORS 錯誤時顯示 toast
-                 toast.error(message);
+            if (setLoad && !message.toLowerCase().includes('cors')) {
+                toast.error(message);
             }
-            // 仍在控制台記錄錯誤
             console.error('獲取進度', error);
-             if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
-                 console.warn("獲取進度時偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定。");
-             }
+            if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
+                console.warn("獲取進度時偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定。");
+            }
             setProgress([]);
         } finally {
             if (setLoad) setDataLoading(false);
         }
-    }, []); // useCallback 依賴為空
+    }, []);
 
-    // Check login status on initial load
     const checkLoginStatus = useCallback(async () => {
-        setInitialLoading(true); // 開始檢查，顯示初始載入
+        setInitialLoading(true);
         try {
             await apiClient.get('/check_login');
             setIsLoggedIn(true);
             setView('dashboard');
-            await getProgress(false); // 初始載入時獲取進度，不顯示載入狀態
+            await getProgress(false);
         } catch (error) {
             setIsLoggedIn(false);
             setView('login');
-            // 不再顯示 "尚未登入或 Session 過期" 給使用者，但在控制台記錄
             console.log("checkLoginStatus 失敗: 尚未登入或 Session 過期 / CORS 問題");
-             if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
-                 console.warn("檢查登入狀態時偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定。");
-             }
+            if (error.message.toLowerCase().includes('network error') || error.message.toLowerCase().includes('failed to fetch') || (error.response && error.response.status === 0)) {
+                console.warn("檢查登入狀態時偵測到網路或 CORS 相關錯誤。請檢查後端 CORS 設定。");
+            }
         } finally {
-            setInitialLoading(false); // 結束檢查，隱藏初始載入
+            setInitialLoading(false);
         }
-    }, [getProgress]); // 依賴 getProgress
+    }, [getProgress]);
 
     useEffect(() => {
         checkLoginStatus();
     }, [checkLoginStatus]);
 
-
-    // --- Render Logic ---
     const renderView = () => {
         if (initialLoading) {
-             return (
-                 <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-                     <LoadingSpinner size="lg" />
-                 </div>
-             );
+            return (
+                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                    <LoadingSpinner size="lg" />
+                </div>
+            );
         }
         switch (view) {
             case 'register':
                 return <RegisterPage setView={setView} handleRegister={handleRegister} loading={authLoading} />;
             case 'dashboard':
                 return isLoggedIn ? (
-                     <DashboardPage
+                    <DashboardPage
                         handleLogout={handleLogout}
                         generatePlan={generatePlan}
                         getProgress={getProgress}
                         progress={progress}
                         plan={plan}
                         loading={dataLoading}
-                        authLoading={authLoading} // 傳遞登出載入狀態
+                        authLoading={authLoading}
                     />
                 ) : (
-                    // 如果 view 是 dashboard 但未登入，強制導回登入頁
                     <LoginPage setView={setView} handleLogin={handleLogin} loading={authLoading} />
                 );
             case 'login':
@@ -449,32 +532,31 @@ const App = () => {
                     style: {
                         background: '#333',
                         color: '#fff',
-                        zIndex: 9999, // 確保在最上層
+                        zIndex: 9999,
                     },
-                     duration: 4000, // 顯示時間加長
+                    duration: 4000,
                 }}
             />
             <div className="content-wrapper">
-                 <motion.h1
+                <motion.h1
                     className="main-title text-center mb-4 h2"
                     initial={{ opacity: 0, y: -30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
-                 >
-                     AI 學習助手
-                 </motion.h1>
-
+                >
+                    AI 個人化學習助手
+                </motion.h1>
                 <AnimatePresence mode="wait">
-                     <motion.div
-                        key={view} // Key 改變觸發動畫
+                    <motion.div
+                        key={view}
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.3 }}
-                        className="motion-div-wrapper" // 使用 wrapper class
-                     >
+                        className="motion-div-wrapper"
+                    >
                         {renderView()}
-                     </motion.div>
+                    </motion.div>
                 </AnimatePresence>
             </div>
         </div>

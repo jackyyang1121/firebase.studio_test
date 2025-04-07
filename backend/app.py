@@ -37,7 +37,7 @@ openai.api_key = OPENAI_API_KEY
 
 def generate_learning_plan(form_data):
     goal = form_data.get('goal', '')
-    specific_goal = form_data.get('specificGoal', '')  # 新增：具體目標
+    specific_goal = form_data.get('specificGoal', '')
     weekly_time = form_data.get('weeklyTime', 5)
     experience_level = form_data.get('experienceLevel', '初學者')
     learning_style = form_data.get('learningStyle', '視覺型')
@@ -47,8 +47,9 @@ def generate_learning_plan(form_data):
     learning_pace = form_data.get('learningPace', '穩步前進')
 
     prompt = f"""
-你是一個 AI 學習助手，任務是為用戶生成一個結構化、個人化的學習計畫。請使用繁體中文回應。
+你是一個 AI 學習助手，任務是為用戶生成一個結構化、個人化的學習計畫。
 用戶的目標是：{goal}
+具體目標：{specific_goal}
 用戶的經驗水平：{experience_level}
 用戶的學習風格：{learning_style}
 用戶的學習動機：{motivation}
@@ -56,11 +57,11 @@ def generate_learning_plan(form_data):
 用戶的語言偏好：{language_preference}
 用戶的學習節奏：{learning_pace}
 用戶每周可用學習時間：{weekly_time} 小時
+若用戶選擇中文請使用繁體中文回應。
 
 請根據用戶的經驗水平生成相應深度的學習內容，並適用於任何學習目標，以下是舉例:
-（若為程式相關目標）
-- 初學者：從基礎入門開始，例如基本語法、資料分析、視覺化、爬蟲。
-- 中級：延續初階內容，學習進階技術，例如機器學習、視覺辨識，或進階句型、流利表達。
+- 初學者：從基礎入門開始，例如基本語法、資料分析。
+- 中級：延續初階內容，學習進階技術，例如機器學習。
 - 高階：學習專業級內容，例如深度學習。
 若為其他目標則套用以上相同概念設計學習計畫
 
@@ -72,8 +73,6 @@ def generate_learning_plan(form_data):
    - 預估完成時間
 3. **時間安排**：根據用戶的每周可用時間和學習節奏，建議一個合理的學習進度。
 4. **評估方法**：建議如何評估學習進展和成果。
-
-請確保計畫具體、可操作，並避免不必要的冗言贅字。
 """
     try:
         response = openai.chat.completions.create(
@@ -85,12 +84,7 @@ def generate_learning_plan(form_data):
             max_tokens=1000,
             temperature=0.7
         )
-        if response.choices:
-            result = response.choices[0].message.content
-            return result.strip()
-        else:
-            logger.warning("OpenAI API returned an empty response.")
-            return "生成失敗，OpenAI API 返回空回應"
+        return response.choices[0].message.content.strip()
     except Exception as e:
         logger.error(f"OpenAI API failed: {str(e)}")
         return f"生成失敗，OpenAI API 錯誤：{str(e)}"
@@ -118,12 +112,7 @@ def generate_lecture(plan_id, section):
             max_tokens=1000,
             temperature=0.7
         )
-        if response.choices:
-            result = response.choices[0].message.content
-            return result.strip()
-        else:
-            logger.warning("OpenAI API returned an empty response.")
-            return "生成失敗，OpenAI API 返回空回應"
+        return response.choices[0].message.content.strip()
     except Exception as e:
         logger.error(f"OpenAI API failed: {str(e)}")
         return f"生成失敗，OpenAI API 錯誤：{str(e)}"
@@ -140,13 +129,13 @@ def generate_lecture_route():
     new_lecture = Lecture(plan_id=plan_id, section=section, content=lecture_content)
     db.session.add(new_lecture)
     db.session.commit()
-    return jsonify({'lecture': lecture_content}), 200
+    return jsonify({'lecture': lecture_content, 'id': new_lecture.id}), 200  # 返回講義 ID
 
 @app.route('/lectures/<int:plan_id>', methods=['GET'])
 @login_required
 def get_lectures(plan_id):
     lectures = Lecture.query.filter_by(plan_id=plan_id).all()
-    return jsonify([{'section': l.section, 'content': l.content, 'completed': l.completed} for l in lectures]), 200
+    return jsonify([{'id': l.id, 'section': l.section, 'content': l.content, 'completed': l.completed} for l in lectures]), 200
 
 @app.route('/complete_lecture', methods=['POST'])
 @login_required

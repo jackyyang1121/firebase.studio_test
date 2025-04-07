@@ -95,7 +95,7 @@ const AuthForm = ({ title, fields, submitAction, submitText, loading, switchForm
 const PlanGenerator = ({ generatePlan, loading }) => {
     const [formData, setFormData] = useState({
         goal: '',
-        specificGoal: '',  // 保留「具體目標」欄位
+        specificGoal: '',
         weeklyTime: 5,
         experienceLevel: '初學者',
         learningStyle: '視覺型',
@@ -127,7 +127,7 @@ const PlanGenerator = ({ generatePlan, loading }) => {
                         <Form.Control
                             type="text"
                             name="goal"
-                            placeholder="例如：學習 Python、提升英語口說、掌握影片剪輯"
+                            placeholder="例如：學習 Python、提升英語口說"
                             value={formData.goal}
                             onChange={handleChange}
                             disabled={loading}
@@ -138,7 +138,7 @@ const PlanGenerator = ({ generatePlan, loading }) => {
                         <Form.Control
                             type="text"
                             name="specificGoal"
-                            placeholder="例如：開發 app、能跟母語者交流、能剪輯出高品質影片"
+                            placeholder="例如：開發 app、能與母語者交流"
                             value={formData.specificGoal}
                             onChange={handleChange}
                             disabled={loading}
@@ -166,6 +166,70 @@ const PlanGenerator = ({ generatePlan, loading }) => {
                             <option value="初學者">初學者</option>
                             <option value="中級">中級</option>
                             <option value="進階">進階</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="imagingStyle">
+                        <Form.Label>學習風格</Form.Label>
+                        <Form.Select
+                            name="learningStyle"
+                            value={formData.learningStyle}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="視覺型">視覺型</option>
+                            <option value="聽覺型">聽覺型</option>
+                            <option value="動手實作型">動手實作型</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="motivation">
+                        <Form.Label>學習動機</Form.Label>
+                        <Form.Select
+                            name="motivation"
+                            value={formData.motivation}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="職業發展">職業發展</option>
+                            <option value="興趣愛好">興趣愛好</option>
+                            <option value="學術研究">學術研究</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="resourcePreference">
+                        <Form.Label>資源偏好</Form.Label>
+                        <Form.Select
+                            name="resourcePreference"
+                            value={formData.resourcePreference}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="線上課程">線上課程</option>
+                            <option value="書籍">書籍</option>
+                            <option value="影片教學">影片教學</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="languagePreference">
+                        <Form.Label>語言偏好</Form.Label>
+                        <Form.Select
+                            name="languagePreference"
+                            value={formData.languagePreference}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="中文">中文</option>
+                            <option value="英文">英文</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="learningPace">
+                        <Form.Label>學習節奏</Form.Label>
+                        <Form.Select
+                            name="learningPace"
+                            value={formData.learningPace}
+                            onChange={handleChange}
+                            disabled={loading}
+                        >
+                            <option value="快速掌握">快速掌握</option>
+                            <option value="穩步前進">穩步前進</option>
+                            <option value="深入學習">深入學習</option>
                         </Form.Select>
                     </Form.Group>
                     <Button
@@ -207,7 +271,8 @@ const LecturePage = ({ planId, planContent, setView }) => {
         setLoading(true);
         try {
             const response = await apiClient.post('/generate_lecture', { plan_id: planId, section });
-            setLectures([...lectures, { section, content: response.data.lecture, completed: false }]);
+            setLectures([...lectures, { section, content: response.data.lecture, completed: false, id: response.data.id }]);
+            toast.success('講義生成成功');
         } catch (error) {
             toast.error('生成講義失敗');
         } finally {
@@ -243,6 +308,7 @@ const LecturePage = ({ planId, planContent, setView }) => {
                     <Badge bg="success">{lectures.filter(l => l.completed).length}/{lectures.length} 已完成</Badge>
                 </Card.Header>
                 <Card.Body>
+                    {loading && <LoadingSpinner size="lg" className="d-block mx-auto my-4" />}
                     <Accordion>
                         {sections.map((section, index) => {
                             const lecture = lectures.find(lec => lec.section === section);
@@ -256,7 +322,7 @@ const LecturePage = ({ planId, planContent, setView }) => {
                                                 <Button
                                                     variant={lecture.completed ? "success" : "outline-success"}
                                                     onClick={() => handleCompleteLecture(lecture.id)}
-                                                    disabled={lecture.completed}
+                                                    disabled={lecture.completed || loading}
                                                 >
                                                     {lecture.completed ? '已完成' : '標記完成'}
                                                 </Button>

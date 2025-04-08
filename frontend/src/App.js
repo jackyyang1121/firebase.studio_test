@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'react-hot-toast';
@@ -7,24 +7,23 @@ import {
 } from 'react-bootstrap';
 import './App.css';
 
-// --- Configuration ---
+// 配置
 const backendUrl = 'https://ai-learning-assistant-30563387234.asia-east1.run.app';
 const backgroundImageUrl = '/background.png';
 
-// --- Axios Instance ---
 const apiClient = axios.create({
     baseURL: backendUrl,
     withCredentials: true,
 });
 
-// --- Helper Components ---
+// 載入動畫組件
 const LoadingSpinner = ({ size = 'sm', className = '' }) => (
     <Spinner animation="border" size={size} role="status" className={className}>
         <span className="visually-hidden">載入中...</span>
     </Spinner>
 );
 
-// --- Authentication Components ---
+// 認證表單組件
 const AuthForm = ({ title, fields, submitAction, submitText, loading, switchFormAction, switchFormText }) => {
     const [formData, setFormData] = useState(() =>
         fields.reduce((acc, field) => {
@@ -91,7 +90,7 @@ const AuthForm = ({ title, fields, submitAction, submitText, loading, switchForm
     );
 };
 
-// --- Dashboard Components ---
+// 計畫生成器組件
 const PlanGenerator = ({ generatePlan, loading }) => {
     const [formData, setFormData] = useState({
         goal: '',
@@ -180,6 +179,9 @@ const PlanGenerator = ({ generatePlan, loading }) => {
                             <option value="聽覺型">聽覺型</option>
                             <option value="動手實作型">動手實作型</option>
                         </Form.Select>
+                        <Form.Text className="text-muted">
+                            視覺型：偏好圖像、圖表等視覺資料；聽覺型：偏好聽講、討論等聽覺資料；動手實作型：偏好實踐、操作等動手活動
+                        </Form.Text>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="motivation">
                         <Form.Label>學習動機</Form.Label>
@@ -246,7 +248,7 @@ const PlanGenerator = ({ generatePlan, loading }) => {
     );
 };
 
-// --- LecturePage Component ---
+// 講義頁面組件
 const LecturePage = ({ planId, planContent, setView }) => {
     const [lectures, setLectures] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -257,7 +259,7 @@ const LecturePage = ({ planId, planContent, setView }) => {
             setLoading(true);
             try {
                 const response = await apiClient.get(`/lectures/${planId}`);
-                console.log('Fetched lectures:', response.data); // 添加日誌檢查回應
+                console.log('Fetched lectures:', response.data);
                 setLectures(response.data || []);
             } catch (error) {
                 toast.error('獲取講義失敗');
@@ -273,7 +275,7 @@ const LecturePage = ({ planId, planContent, setView }) => {
         setLoading(true);
         try {
             const response = await apiClient.post('/generate_lecture', { plan_id: planId, section });
-            console.log('Generated lecture response:', response.data); // 添加日誌檢查回應
+            console.log('Generated lecture response:', response.data);
             const newLecture = {
                 id: response.data.id,
                 section: section,
@@ -360,7 +362,7 @@ const LecturePage = ({ planId, planContent, setView }) => {
     );
 };
 
-// --- Dashboard Page ---
+// 儀表板頁面
 const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan, loading, authLoading, setView }) => (
     <Container fluid>
         <Row className="mb-4 align-items-center">
@@ -384,7 +386,7 @@ const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan
             <Col md={6}>
                 <Card className="custom-card mb-4">
                     <Card.Header>學習進度 & 計畫</Card.Header>
-                    <Card.Body style={{ overflowY: 'auto' }}> {/* 移除 maxHeight，讓內容完整顯示 */}
+                    <Card.Body style={{ overflowY: 'auto' }}>
                         {plan && (
                             <motion.div
                                 className="latest-plan-section"
@@ -429,7 +431,7 @@ const DashboardPage = ({ handleLogout, generatePlan, getProgress, progress, plan
     </Container>
 );
 
-// --- Main Page Components ---
+// 登入頁面
 const LoginPage = ({ setView, handleLogin, loading }) => (
     <AuthForm
         title="登入"
@@ -445,6 +447,7 @@ const LoginPage = ({ setView, handleLogin, loading }) => (
     />
 );
 
+// 註冊頁面
 const RegisterPage = ({ setView, handleRegister, loading }) => (
     <AuthForm
         title="註冊"
@@ -460,13 +463,11 @@ const RegisterPage = ({ setView, handleRegister, loading }) => (
     />
 );
 
-// --- App Component ---
+// 主應用組件
 const App = () => {
-    const [view, setView] = useState('login');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [view, setView] = useState('dashboard'); // 預設進入儀表板
     const [plan, setPlan] = useState(null);
     const [progress, setProgress] = useState([]);
-    const [initialLoading, setInitialLoading] = useState(true);
     const [authLoading, setAuthLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState(null);
@@ -512,9 +513,8 @@ const App = () => {
             '登入'
         );
         if (response) {
-            setIsLoggedIn(true);
             setView('dashboard');
-            await getProgress(false);
+            await getProgress();
         }
     };
 
@@ -526,7 +526,6 @@ const App = () => {
             '登出'
         );
         if (success) {
-            setIsLoggedIn(false);
             setView('login');
             setPlan(null);
             setProgress([]);
@@ -542,12 +541,12 @@ const App = () => {
         );
         if (response) {
             setPlan({ plan: response.data.plan, id: response.data.plan_id });
-            await getProgress(false);
+            await getProgress();
         }
     };
 
-    const getProgress = useCallback(async (setLoad = true) => {
-        if (setLoad) setDataLoading(true);
+    const getProgress = async () => {
+        setDataLoading(true);
         try {
             const response = await apiClient.get('/learning_progress');
             setProgress(response.data || []);
@@ -555,37 +554,15 @@ const App = () => {
             toast.error('獲取進度失敗');
             setProgress([]);
         } finally {
-            if (setLoad) setDataLoading(false);
+            setDataLoading(false);
         }
-    }, []);
-
-    const checkLoginStatus = useCallback(async () => {
-        setInitialLoading(true);
-        try {
-            await apiClient.get('/check_login');
-            setIsLoggedIn(true);
-            setView('dashboard');
-            await getProgress(false);
-        } catch (error) {
-            setIsLoggedIn(false);
-            setView('login');
-        } finally {
-            setInitialLoading(false);
-        }
-    }, [getProgress]);
+    };
 
     useEffect(() => {
-        checkLoginStatus();
-    }, [checkLoginStatus]);
+        getProgress();
+    }, []);
 
     const renderView = () => {
-        if (initialLoading) {
-            return (
-                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-                    <LoadingSpinner size="lg" />
-                </div>
-            );
-        }
         switch (view) {
             case 'register':
                 return <RegisterPage setView={setView} handleRegister={handleRegister} loading={authLoading} />;
@@ -598,7 +575,7 @@ const App = () => {
                     />
                 );
             case 'dashboard':
-                return isLoggedIn ? (
+                return (
                     <DashboardPage
                         handleLogout={handleLogout}
                         generatePlan={generatePlan}
@@ -612,8 +589,6 @@ const App = () => {
                             if (planData) setSelectedPlan(planData);
                         }}
                     />
-                ) : (
-                    <LoginPage setView={setView} handleLogin={handleLogin} loading={authLoading} />
                 );
             case 'login':
             default:

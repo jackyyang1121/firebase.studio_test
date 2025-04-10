@@ -7,9 +7,18 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     # pkgs.go
-    # pkgs.python311
-    # pkgs.python311Packages.pip
-    # pkgs.nodejs_20
+    (pkgs.python311.withPackages (ps: with ps; [
+      Flask
+      Flask-SQLAlchemy
+      requests
+      beautifulsoup4
+      openai
+      python-dotenv
+      Flask-Cors
+    ]))
+    # If you want to use a specific version of python remove the above line and uncomment the following lines
+    # (pkgs.python311.withPackages (ps: with ps; [ pip ]))
+    pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
   ];
 

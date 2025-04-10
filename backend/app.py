@@ -122,7 +122,7 @@ def generate_lecture(plan_id, section):
 """
     try:
         response = openai.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4-0125-preview",
             messages=[
                 {"role": "system", "content": "你是一個專業的講義生成器。"},
                 {"role": "user", "content": prompt}
